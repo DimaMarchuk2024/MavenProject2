@@ -11,24 +11,34 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "user")
 @Builder
 @Entity
-@Table(name = "delivery_address")
-public class DeliveryAddress {
+@Table(name = "pizza_ingredient")
+public class PizzaIngredient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "pizza_id")
+    private Pizza pizza;
 
-    private String address;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ingredient_id")
+    private Ingredient ingredient;
+
+    public void setPizza(Pizza pizza) {
+        this.pizza = pizza;
+        this.pizza.getPizzaIngredients().add(this);
+    }
+
+    public void setIngredient(Ingredient ingredient) {
+        this.ingredient = ingredient;
+        this.ingredient.getPizzaIngredients().add(this);
+    }
 }

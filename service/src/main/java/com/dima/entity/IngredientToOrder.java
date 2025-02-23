@@ -19,8 +19,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "order_pizza")
-public class OrderPizza {
+@Table(name = "ingredient_to_order")
+public class IngredientToOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +31,18 @@ public class OrderPizza {
     private PizzaToOrder pizzaToOrder;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "order_id")
-    private Order order;
+    @JoinColumn(name = "ingredient_id")
+    private Ingredient ingredient;
 
     private BigDecimal price;
+
+    public void setPizzaToOrder(PizzaToOrder pizzaToOrder) {
+        this.pizzaToOrder = pizzaToOrder;
+        this.pizzaToOrder.getIngredientToOrders().add(this);
+    }
+
+    public void setIngredient(Ingredient ingredient) {
+        this.ingredient = ingredient;
+        this.ingredient.getIngredientToOrders().add(this);
+    }
 }
