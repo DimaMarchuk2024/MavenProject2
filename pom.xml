@@ -22,16 +22,21 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>jakarta.servlet</groupId>
-                <artifactId>jakarta.servlet-api</artifactId>
-                <version>6.1.0</version>
-                <scope>provided</scope>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>6.6.7.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>42.7.5</version>
                 <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.36</version>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>
@@ -52,6 +57,11 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-wrapper-plugin</artifactId>
+                    <version>3.3.2</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
@@ -121,7 +131,7 @@
                             <goals>
                                 <goal>report</goal>
                             </goals>
-                            <phase>prepare-package</phase>
+                            <phase>verify</phase>
                         </execution>
                     </executions>
                 </plugin>
