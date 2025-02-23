@@ -5,27 +5,38 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "orderPizzas")
 @Builder
 @Entity
-public class Orders {
+@Table(name = "orders")
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "date_order")
-    private LocalDateTime dateOrder;
+    private Instant date;
 
     @Column(name = "final_price")
-    private Double finalPrice;
+    private BigDecimal finalPrice;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "order")
+    List<OrderPizza> orderPizzas = new ArrayList<>();
 }

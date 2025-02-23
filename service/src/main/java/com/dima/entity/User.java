@@ -6,12 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"deliveryAddresses", "pizzaToOrders"})
 @Builder
 @Entity
 @Table(name = "users")
@@ -37,4 +41,12 @@ public class User {
     private LocalDate birthDate;
 
     private String password;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user")
+    private List<DeliveryAddress> deliveryAddresses = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user")
+    private List<PizzaToOrder> pizzaToOrders = new ArrayList<>();
 }
