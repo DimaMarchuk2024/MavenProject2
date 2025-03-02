@@ -15,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class PizzaIngredientIT {
 
-    SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
-    Session session = null;
+    private static final SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
+    private Session session = null;
 
     @BeforeEach
     void init() {
@@ -24,11 +24,20 @@ class PizzaIngredientIT {
         session.beginTransaction();
     }
 
+    @AfterEach
+    void afterTest() {
+        session.getTransaction().rollback();
+        session.close();
+        sessionFactory.close();
+    }
+
     @Test
     void save() {
         PizzaIngredient pizzaIngredient = getPizzaIngredient();
-
         session.persist(pizzaIngredient);
+        session.flush();
+        session.evict(pizzaIngredient);
+
         PizzaIngredient actualResult = session.get(PizzaIngredient.class, pizzaIngredient.getId());
 
         assertNotNull(actualResult.getId());
@@ -38,6 +47,8 @@ class PizzaIngredientIT {
     void get() {
         PizzaIngredient pizzaIngredient = getPizzaIngredient();
         session.persist(pizzaIngredient);
+        session.flush();
+        session.evict(pizzaIngredient);
 
         PizzaIngredient actualResult = session.get(PizzaIngredient.class, pizzaIngredient.getId());
 
@@ -49,22 +60,16 @@ class PizzaIngredientIT {
     void update() {
         PizzaIngredient pizzaIngredient = getPizzaIngredient();
         session.persist(pizzaIngredient);
-        Ingredient ingredient2 = Ingredient.builder()
-                .name("Mozzarella2")
-                .price(BigDecimal.valueOf(3.9))
-                .build();
+        session.evict(pizzaIngredient);
+        Ingredient ingredient2 = getIngredient2();
         session.persist(ingredient2);
-        Pizza pizza2 = Pizza.builder()
-                .name("Pepperoni2")
-                .build();
+        Pizza pizza2 = getPizza2();
         session.persist(pizza2);
-        PizzaIngredient pizzaIngredient2 = PizzaIngredient.builder()
-                .id(pizzaIngredient.getId())
-                .pizza(pizza2)
-                .ingredient(ingredient2)
-                .build();
-
+        PizzaIngredient pizzaIngredient2 = getPizzaIngredient2(pizzaIngredient, pizza2, ingredient2);
         session.merge(pizzaIngredient2);
+        session.flush();
+        session.evict(pizzaIngredient2);
+
         PizzaIngredient actualResult = session.get(PizzaIngredient.class, pizzaIngredient.getId());
 
         assertThat(actualResult.getPizza()).isEqualTo(pizzaIngredient2.getPizza());
@@ -75,11 +80,34 @@ class PizzaIngredientIT {
     void delete() {
         PizzaIngredient pizzaIngredient = getPizzaIngredient();
         session.persist(pizzaIngredient);
-
         session.remove(pizzaIngredient);
+        session.flush();
+        session.evict(pizzaIngredient);
+
         PizzaIngredient actualResult = session.get(PizzaIngredient.class, pizzaIngredient.getId());
 
         assertNull(actualResult);
+    }
+
+    private static PizzaIngredient getPizzaIngredient2(PizzaIngredient pizzaIngredient, Pizza pizza2, Ingredient ingredient2) {
+        return PizzaIngredient.builder()
+                .id(pizzaIngredient.getId())
+                .pizza(pizza2)
+                .ingredient(ingredient2)
+                .build();
+    }
+
+    private static Pizza getPizza2() {
+        return Pizza.builder()
+                .name("Pepperoni2")
+                .build();
+    }
+
+    private static Ingredient getIngredient2() {
+        return Ingredient.builder()
+                .name("Mozzarella2")
+                .price(BigDecimal.valueOf(3.9))
+                .build();
     }
 
     private PizzaIngredient getPizzaIngredient() {
@@ -98,12 +126,5 @@ class PizzaIngredientIT {
                 .pizza(pizza)
                 .ingredient(ingredient)
                 .build();
-    }
-
-    @AfterEach
-    void afterTest() {
-        session.getTransaction().rollback();
-        session.close();
-        sessionFactory.close();
     }
 }

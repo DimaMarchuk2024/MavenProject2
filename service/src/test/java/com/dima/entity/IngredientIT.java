@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class IngredientIT {
 
-    Session session = null;
-    SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
+    private static final SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
+    private Session session = null;
 
     @BeforeEach
     void init() {
@@ -23,11 +23,19 @@ class IngredientIT {
         session.beginTransaction();
     }
 
+    @AfterEach
+    void afterTest() {
+        session.getTransaction().rollback();
+        session.close();
+    }
+
     @Test
     void save() {
         Ingredient ingredient = getIngredient();
-
         session.persist(ingredient);
+        session.flush();
+        session.evict(ingredient);
+
         Ingredient actualResult = session.get(Ingredient.class, ingredient.getId());
 
         assertNotNull(actualResult.getId());
@@ -37,6 +45,8 @@ class IngredientIT {
     void get() {
         Ingredient ingredient = getIngredient();
         session.persist(ingredient);
+        session.flush();
+        session.evict(ingredient);
 
         Ingredient actualResult = session.get(Ingredient.class, ingredient.getId());
 
@@ -48,13 +58,12 @@ class IngredientIT {
     void update() {
         Ingredient ingredient = getIngredient();
         session.persist(ingredient);
-        Ingredient ingredient2 = Ingredient.builder()
-                .id(ingredient.getId())
-                .name("Mozzarella2")
-                .price(BigDecimal.valueOf(3.9))
-                .build();
-
+        session.evict(ingredient);
+        Ingredient ingredient2 = getIngredient2(ingredient);
         session.merge(ingredient2);
+        session.flush();
+        session.evict(ingredient2);
+
         Ingredient actualResult = session.get(Ingredient.class, ingredient.getId());
 
         assertThat(actualResult.getName()).isEqualTo(ingredient2.getName());
@@ -65,11 +74,21 @@ class IngredientIT {
     void delete() {
         Ingredient ingredient = getIngredient();
         session.persist(ingredient);
-
         session.remove(ingredient);
+        session.flush();
+        session.evict(ingredient);
+
         Ingredient actualResult = session.get(Ingredient.class, ingredient.getId());
 
         assertNull(actualResult);
+    }
+
+    private static Ingredient getIngredient2(Ingredient ingredient) {
+        return Ingredient.builder()
+                .id(ingredient.getId())
+                .name("Mozzarella2")
+                .price(BigDecimal.valueOf(3.9))
+                .build();
     }
 
     private static Ingredient getIngredient() {
@@ -77,11 +96,5 @@ class IngredientIT {
                 .name("Mozzarella")
                 .price(BigDecimal.valueOf(3.5))
                 .build();
-    }
-
-    @AfterEach
-    void afterTest() {
-        session.getTransaction().rollback();
-        session.close();
     }
 }

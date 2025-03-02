@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class OrderIT {
 
-    SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
-    Session session = null;
+    private static final SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
+    private Session session = null;
 
     @BeforeEach
     void init() {
@@ -25,11 +25,19 @@ class OrderIT {
         session.beginTransaction();
     }
 
+    @AfterEach
+    void afterTest() {
+        session.getTransaction().rollback();
+        session.close();
+    }
+
     @Test
     void save() {
         Order order = getOrder();
-
         session.persist(order);
+        session.flush();
+        session.evict(order);
+
         Order actualResult = session.get(Order.class, order.getId());
 
         assertNotNull(actualResult.getId());
@@ -40,10 +48,12 @@ class OrderIT {
     void get() {
         Order order = getOrder();
         session.persist(order);
+        session.flush();
+        session.evict(order);
 
         Order actualResult = session.get(Order.class, order.getId());
 
-        assertThat(actualResult.getDate()).isEqualTo(order.getDate());
+        assertThat(actualResult.getDateTime()).isEqualTo(order.getDateTime());
         assertThat(actualResult.getFinalPrice()).isEqualTo(order.getFinalPrice());
     }
 
@@ -51,16 +61,15 @@ class OrderIT {
     void update() {
         Order order = getOrder();
         session.persist(order);
-        Order order2 = Order.builder()
-                .id(order.getId())
-                .date(Instant.now().plusSeconds(500))
-                .finalPrice(BigDecimal.valueOf(150))
-                .build();
-
+        session.evict(order);
+        Order order2 = getOrder2(order);
         session.merge(order2);
+        session.flush();
+        session.evict(order2);
+
         Order actualResult = session.get(Order.class, order.getId());
 
-        assertThat(actualResult.getDate()).isEqualTo(order2.getDate());
+        assertThat(actualResult.getDateTime()).isEqualTo(order2.getDateTime());
         assertThat(actualResult.getFinalPrice()).isEqualTo(order2.getFinalPrice());
     }
 
@@ -68,23 +77,27 @@ class OrderIT {
     void delete() {
         Order order = getOrder();
         session.persist(order);
-
         session.remove(order);
+        session.flush();
+        session.evict(order);
+
         Order actualResult = session.get(Order.class, order.getId());
 
         assertNull(actualResult);
     }
 
-    private static Order getOrder() {
+    private static Order getOrder2(Order order) {
         return Order.builder()
-                .date(Instant.now())
-                .finalPrice(BigDecimal.valueOf(100))
+                .id(order.getId())
+                .dateTime(Instant.now().plusSeconds(500))
+                .finalPrice(BigDecimal.valueOf(150))
                 .build();
     }
 
-    @AfterEach
-    void afterTest() {
-        session.getTransaction().rollback();
-        session.close();
+    private static Order getOrder() {
+        return Order.builder()
+                .dateTime(Instant.now())
+                .finalPrice(BigDecimal.valueOf(100))
+                .build();
     }
 }

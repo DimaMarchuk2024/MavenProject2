@@ -8,6 +8,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -19,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"pizzaIngredients", "ingredientToOrders"})
+@EqualsAndHashCode(of = "id")
 @Builder
 @Entity
 public class Ingredient {

@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class UserIT {
 
-    Session session = null;
-    SessionFactory  sessionFactory = HibernateUtil.buildSessionFactory();
+    private static final SessionFactory  sessionFactory = HibernateUtil.buildSessionFactory();
+    private Session session = null;
 
     @BeforeEach
     void init() {
@@ -25,11 +25,19 @@ class UserIT {
         session.beginTransaction();
     }
 
+    @AfterEach
+    void afterTest() {
+        session.getTransaction().rollback();
+        session.close();
+    }
+
     @Test
     void save() {
         User user = getUser();
-
         session.persist(user);
+        session.flush();
+        session.evict(user);
+
         User actualResult = session.get(User.class, user.getId());
 
         assertNotNull(actualResult.getId());
@@ -38,8 +46,9 @@ class UserIT {
     @Test
     void get() {
         User user = getUser();
-
         session.persist(user);
+        session.flush();
+        session.evict(user);
         User actualResult = session.get(User.class, user.getId());
 
         assertThat(actualResult).isEqualTo(user);
@@ -49,17 +58,12 @@ class UserIT {
     void update() {
         User user = getUser();
         session.persist(user);
-        User user2 = User.builder()
-                .id(user.getId())
-                .firstname("Petr")
-                .lastname("Petrov")
-                .phoneNumber("4321")
-                .birthDate(LocalDate.of(2000, 12, 1))
-                .role(Role.USER)
-                .password("999")
-                .build();
-
+        session.evict(user);
+        User user2 = getUser2(user);
         session.merge(user2);
+        session.flush();
+        session.evict(user2);
+
         User actualResult = session.get(User.class, user.getId());
 
         assertThat(actualResult.getFirstname()).isEqualTo(user2.getFirstname());
@@ -74,11 +78,25 @@ class UserIT {
     void delete() {
         User user = getUser();
         session.persist(user);
-
         session.remove(user);
+        session.flush();
+        session.evict(user);
+
         User actualResult = session.get(User.class, user.getId());
 
         assertNull(actualResult);
+    }
+
+    private static User getUser2(User user) {
+        return User.builder()
+                .id(user.getId())
+                .firstname("Petr")
+                .lastname("Petrov")
+                .phoneNumber("4321")
+                .birthDate(LocalDate.of(2000, 12, 1))
+                .role(Role.USER)
+                .password("999")
+                .build();
     }
 
     private static User getUser() {
@@ -90,11 +108,5 @@ class UserIT {
                 .role(Role.ADMIN)
                 .password("111")
                 .build();
-    }
-
-    @AfterEach
-    void afterTest() {
-        session.getTransaction().rollback();
-        session.close();
     }
 }
