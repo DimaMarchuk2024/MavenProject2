@@ -28,7 +28,7 @@ CREATE TABLE users
     firstname    VARCHAR(64)        NOT NULL,
     lastname     VARCHAR(64)        NOT NULL,
     phone_number VARCHAR(64) UNIQUE NOT NULL,
-    email        VARCHAR(64),
+    email        VARCHAR(64) UNIQUE NOT NULL,
     role         VARCHAR(32)        NOT NULL,
     birth_date   DATE,
     password     VARCHAR(64)        NOT NULL
@@ -57,18 +57,17 @@ CREATE TABLE ingredient_to_order
     id                BIGSERIAL PRIMARY KEY,
     pizza_to_order_id BIGINT REFERENCES pizza_to_order (id) ON DELETE NO ACTION,
     ingredient_id     INT REFERENCES ingredient (id) ON DELETE NO ACTION,
-    price             NUMERIC(5, 2),
     UNIQUE (pizza_to_order_id, ingredient_id)
 );
 
 CREATE TABLE orders
 (
     id          BIGSERIAL PRIMARY KEY,
-    date        TIMESTAMP     NOT NULL,
+    date_time   TIMESTAMP     NOT NULL,
     final_price NUMERIC(5, 2) NOT NULL
 );
 
-CREATE TABLE order_pizza
+CREATE TABLE order_detail
 (
     id                BIGSERIAL PRIMARY KEY,
     order_id          BIGINT REFERENCES orders (id) ON DELETE NO ACTION,
