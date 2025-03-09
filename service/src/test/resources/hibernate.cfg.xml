@@ -21,7 +21,7 @@
         <mapping class="com.dima.entity.DeliveryAddress"/>
         <mapping class="com.dima.entity.PizzaToOrder"/>
         <mapping class="com.dima.entity.Order"/>
-        <mapping class="com.dima.entity.OrderPizza"/>
+        <mapping class="com.dima.entity.OrderDetail"/>
         <mapping class="com.dima.entity.IngredientToOrder"/>
 
     </session-factory>

@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -21,7 +22,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "orderPizzas")
+@ToString(exclude = "orderDetails")
+@EqualsAndHashCode(of = "id")
 @Builder
 @Entity
 @Table(name = "orders")
@@ -31,12 +33,13 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Instant date;
+    @Column(name = "date_time")
+    private Instant dateTime;
 
     @Column(name = "final_price")
     private BigDecimal finalPrice;
 
     @Builder.Default
     @OneToMany(mappedBy = "order")
-    List<OrderPizza> orderPizzas = new ArrayList<>();
+    private List<OrderDetail> orderDetails = new ArrayList<>();
 }

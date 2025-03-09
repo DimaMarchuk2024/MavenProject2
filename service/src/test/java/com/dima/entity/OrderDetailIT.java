@@ -9,15 +9,15 @@ import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class IngredientToOrderIT {
+class OrderDetailIT {
 
     private static final SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
     private Session session = null;
@@ -36,78 +36,81 @@ public class IngredientToOrderIT {
 
     @Test
     void save() {
-        IngredientToOrder ingredientToOrder = getIngredientToOrder();
-        session.persist(ingredientToOrder);
+        OrderDetail orderDetail = getOrderDetail();
+        session.persist(orderDetail);
         session.flush();
-        session.evict(ingredientToOrder);
+        session.evict(orderDetail);
 
-        IngredientToOrder actualResult = session.get(IngredientToOrder.class, ingredientToOrder.getId());
+        OrderDetail actualResult = session.get(OrderDetail.class, orderDetail.getId());
 
         assertNotNull(actualResult.getId());
     }
 
     @Test
     void get() {
-        IngredientToOrder ingredientToOrder = getIngredientToOrder();
-        session.persist(ingredientToOrder);
+        OrderDetail orderDetail = getOrderDetail();
+        session.persist(orderDetail);
         session.flush();
-        session.evict(ingredientToOrder);
+        session.evict(orderDetail);
 
-        IngredientToOrder actualResult = session.get(IngredientToOrder.class, ingredientToOrder.getId());
+        OrderDetail actualResult = session.get(OrderDetail.class, orderDetail.getId());
 
-        assertThat(actualResult.getPizzaToOrder()).isEqualTo(ingredientToOrder.getPizzaToOrder());
-        assertThat(actualResult.getIngredient()).isEqualTo(ingredientToOrder.getIngredient());
+        assertThat(actualResult.getPizzaToOrder()).isEqualTo(orderDetail.getPizzaToOrder());
+        assertThat(actualResult.getOrder()).isEqualTo(orderDetail.getOrder());
+        assertThat(actualResult.getPrice()).isEqualTo(orderDetail.getPrice());
     }
 
     @Test
     void update() {
-        IngredientToOrder ingredientToOrder = getIngredientToOrder();
-        session.persist(ingredientToOrder);
-        session.evict(ingredientToOrder);
+        OrderDetail orderDetail = getOrderDetail();
+        session.persist(orderDetail);
+        session.evict(orderDetail);
         Pizza pizza2 = getPizza2();
         session.persist(pizza2);
         User user2 = getUser2();
         session.persist(user2);
         PizzaToOrder pizzaToOrder2 = getPizzaToOrder2(pizza2, user2);
         session.persist(pizzaToOrder2);
-        Ingredient ingredient2 = getIngredient2();
-        session.persist(ingredient2);
-        IngredientToOrder ingredientToOrder2 = getIngredientToOrder2(ingredientToOrder, pizzaToOrder2, ingredient2);
-        session.merge(ingredientToOrder2);
+        Order order2 = getOrder2();
+        session.persist(order2);
+        OrderDetail orderDetail2 = getOrderDetail2(orderDetail, pizzaToOrder2, order2);
+        session.merge(orderDetail2);
         session.flush();
-        session.evict(ingredientToOrder2);
+        session.evict(orderDetail2);
 
-        IngredientToOrder actualResult = session.get(IngredientToOrder.class, ingredientToOrder.getId());
+        OrderDetail actualResult = session.get(OrderDetail.class, orderDetail.getId());
 
-        assertThat(actualResult.getPizzaToOrder()).isEqualTo(ingredientToOrder2.getPizzaToOrder());
-        assertThat(actualResult.getIngredient()).isEqualTo(ingredientToOrder2.getIngredient());
+        assertThat(actualResult.getPizzaToOrder()).isEqualTo(orderDetail2.getPizzaToOrder());
+        assertThat(actualResult.getOrder()).isEqualTo(orderDetail2.getOrder());
+        assertThat(actualResult.getPrice()).isEqualTo(orderDetail2.getPrice());
     }
 
     @Test
     void delete() {
-        IngredientToOrder ingredientToOrder = getIngredientToOrder();
-        session.persist(ingredientToOrder);
-        session.remove(ingredientToOrder);
+        OrderDetail orderDetail = getOrderDetail();
+        session.persist(orderDetail);
+        session.remove(orderDetail);
         session.flush();
-        session.evict(ingredientToOrder);
+        session.evict(orderDetail);
 
-        IngredientToOrder actualResult = session.get(IngredientToOrder.class, ingredientToOrder.getId());
+        OrderDetail actualResult = session.get(OrderDetail.class, orderDetail.getId());
 
         assertNull(actualResult);
     }
 
-    private static IngredientToOrder getIngredientToOrder2(IngredientToOrder ingredientToOrder, PizzaToOrder pizzaToOrder2, Ingredient ingredient2) {
-        return IngredientToOrder.builder()
-                .id(ingredientToOrder.getId())
+    private static OrderDetail getOrderDetail2(OrderDetail orderDetail, PizzaToOrder pizzaToOrder2, Order order2) {
+        return OrderDetail.builder()
+                .id(orderDetail.getId())
                 .pizzaToOrder(pizzaToOrder2)
-                .ingredient(ingredient2)
+                .order(order2)
+                .price(BigDecimal.valueOf(90))
                 .build();
     }
 
-    private static Ingredient getIngredient2() {
-        return Ingredient.builder()
-                .name("Mozzarella2")
-                .price(BigDecimal.valueOf(3.9))
+    private static Order getOrder2() {
+        return Order.builder()
+                .dateTime(Instant.now().plusSeconds(500))
+                .finalPrice(BigDecimal.valueOf(150))
                 .build();
     }
 
@@ -139,7 +142,7 @@ public class IngredientToOrderIT {
                 .build();
     }
 
-    private IngredientToOrder getIngredientToOrder() {
+    private OrderDetail getOrderDetail() {
         Pizza pizza = Pizza.builder()
                 .name("Pepperoni")
                 .build();
@@ -165,15 +168,16 @@ public class IngredientToOrderIT {
                 .build();
         session.persist(pizzaToOrder);
 
-        Ingredient ingredient = Ingredient.builder()
-                .name("Mozzarella")
-                .price(BigDecimal.valueOf(3.5))
+        Order order = Order.builder()
+                .dateTime(Instant.now())
+                .finalPrice(BigDecimal.valueOf(100))
                 .build();
-        session.persist(ingredient);
+        session.persist(order);
 
-        return IngredientToOrder.builder()
+        return OrderDetail.builder()
                 .pizzaToOrder(pizzaToOrder)
-                .ingredient(ingredient)
+                .order(order)
+                .price(BigDecimal.valueOf(70))
                 .build();
     }
 }

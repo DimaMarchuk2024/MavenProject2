@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,6 +17,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -26,7 +28,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"ingredientToOrders", "orderPizzas"})
+@ToString(exclude = {"ingredientToOrders", "orderDetails"})
+@EqualsAndHashCode(of = "id")
 @Builder
 @Entity
 @Table(name = "pizza_to_order")
@@ -36,7 +39,7 @@ public class PizzaToOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "pizza_id",nullable = false)
     private Pizza pizza;
 
@@ -51,15 +54,19 @@ public class PizzaToOrder {
 
     private BigDecimal price;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @Builder.Default
     @OneToMany(mappedBy = "pizzaToOrder")
-    List<IngredientToOrder> ingredientToOrders = new ArrayList<>();
+    private List<IngredientToOrder> ingredientToOrders = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "pizzaToOrder")
-    List<OrderPizza> orderPizzas = new ArrayList<>();
+    private List<OrderDetail> orderDetails = new ArrayList<>();
+
+    public Integer getPizza() {
+        return pizza.getId();
+    }
 }
