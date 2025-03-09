@@ -18,16 +18,15 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "orderDetails")
-@EqualsAndHashCode(of = "id")
 @Builder
 @Entity
 @Table(name = "orders")
-public class Order {
+public class Order implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,4 +41,26 @@ public class Order {
     @Builder.Default
     @OneToMany(mappedBy = "order")
     private List<OrderDetail> orderDetails = new ArrayList<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return Objects.equals(dateTime, order.dateTime)
+               && Objects.equals(finalPrice, order.finalPrice);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dateTime, finalPrice);
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+               "dateTime=" + dateTime +
+               ", finalPrice=" + finalPrice +
+               '}';
+    }
 }

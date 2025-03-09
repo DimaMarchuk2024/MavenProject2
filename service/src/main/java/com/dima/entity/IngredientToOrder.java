@@ -15,14 +15,15 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.Objects;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
 @Builder
 @Entity
 @Table(name = "ingredient_to_order")
-public class IngredientToOrder {
+public class IngredientToOrder implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,5 +45,27 @@ public class IngredientToOrder {
     public void setIngredient(Ingredient ingredient) {
         this.ingredient = ingredient;
         this.ingredient.getIngredientToOrders().add(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IngredientToOrder that = (IngredientToOrder) o;
+        return Objects.equals(pizzaToOrder.getId(), that.pizzaToOrder.getId())
+               && Objects.equals(ingredient.getId(), that.ingredient.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pizzaToOrder.getId(), ingredient.getId());
+    }
+
+    @Override
+    public String toString() {
+        return "IngredientToOrder{" +
+               "pizzaToOrderId=" + pizzaToOrder.getId() +
+               ", ingredientId=" + ingredient.getId() +
+               '}';
     }
 }

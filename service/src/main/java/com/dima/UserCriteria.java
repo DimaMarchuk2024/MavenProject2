@@ -28,6 +28,10 @@ public class UserCriteria {
 
     private static final UserCriteria INSTANCE = new UserCriteria();
 
+    public static UserCriteria getInstance() {
+        return INSTANCE;
+    }
+
     /**
      * Возвращает всех пользователей
      */
@@ -150,8 +154,5 @@ public class UserCriteria {
 
         return session.createQuery(criteria)
                 .list();
-    }
-    public static UserCriteria getInstance() {
-        return INSTANCE;
     }
 }
