@@ -94,7 +94,7 @@ class IngredientIT {
     private static Ingredient getIngredient() {
         return Ingredient.builder()
                 .name("Mozzarella")
-                .price(BigDecimal.valueOf(3.5))
+                .price(BigDecimal.valueOf(3.5).setScale(2))
                 .build();
     }
 }

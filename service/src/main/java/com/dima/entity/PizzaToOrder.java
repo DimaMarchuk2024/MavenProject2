@@ -24,16 +24,15 @@ import lombok.ToString;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"ingredientToOrders", "orderDetails"})
-@EqualsAndHashCode(of = "id")
 @Builder
 @Entity
 @Table(name = "pizza_to_order")
-public class PizzaToOrder {
+public class PizzaToOrder implements BaseEntity<Long>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,7 +65,33 @@ public class PizzaToOrder {
     @OneToMany(mappedBy = "pizzaToOrder")
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
-    public Integer getPizza() {
-        return pizza.getId();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PizzaToOrder that = (PizzaToOrder) o;
+        return Objects.equals(pizza.getId(), that.pizza.getId())
+               && size == that.size
+               && type == that.type
+               && Objects.equals(count, that.count)
+               && Objects.equals(price, that.price)
+               && Objects.equals(user.getId(), that.user.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pizza.getId(), size, type, count, price, user.getId());
+    }
+
+    @Override
+    public String toString() {
+        return "PizzaToOrder{" +
+               "pizzaId=" + pizza.getId() +
+               ", size=" + size +
+               ", type=" + type +
+               ", count=" + count +
+               ", price=" + price +
+               ", userId=" + user.getId() +
+               '}';
     }
 }

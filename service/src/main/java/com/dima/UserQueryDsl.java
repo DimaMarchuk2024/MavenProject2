@@ -28,6 +28,10 @@ public class UserQueryDsl {
 
     private static final UserQueryDsl INSTANCE = new UserQueryDsl();
 
+    public static UserQueryDsl getInstance() {
+        return INSTANCE;
+    }
+
     /**
      * Возвращает всех пользователей
      */
@@ -76,7 +80,7 @@ public class UserQueryDsl {
                 .add(pizzaFilter.getPizzaName(), pizza.name::eq)
                 .buildAnd();
 
-        return new JPAQuery<User>(session)
+        return new JPAQuery<PizzaToOrder>(session)
                 .select(pizzaToOrder)
                 .from(pizzaToOrder)
                 .join(pizzaToOrder.pizza, pizza)
@@ -99,14 +103,14 @@ public class UserQueryDsl {
                 .add(pizzaFilter.getPizzaName(), pizza.name::eq)
                 .buildAnd();
 
-        return new JPAQuery<User>(session)
+        return new JPAQuery<OrderDetail>(session)
                 .select(orderDetail)
                 .from(orderDetail)
                 .join(orderDetail.pizzaToOrder, pizzaToOrder)
                 .join(pizzaToOrder.pizza, pizza)
                 .where(predicate)
                 .orderBy(pizzaToOrder.count.asc(), orderDetail.order.finalPrice.asc())
-                .setHint(GraphSemantic.LOAD.getJakartaHintName(), orderDetailGraph)
+                .setHint(GraphSemantic.FETCH.getJakartaHintName(), orderDetailGraph)
                 .fetch();
     }
 
@@ -138,9 +142,5 @@ public class UserQueryDsl {
                 .groupBy(pizza.name)
                 .orderBy(pizza.name.asc())
                 .fetch();
-    }
-
-    public static UserQueryDsl getInstance() {
-        return INSTANCE;
     }
 }

@@ -14,22 +14,21 @@ import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UserQueryDslTest {
+public class UserQueryDslIT {
 
     private static final SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
-    UserQueryDsl userQueryDsl = UserQueryDsl.getInstance();
-    private final Session session = sessionFactory.openSession();
+    private final UserQueryDsl userQueryDsl = UserQueryDsl.getInstance();
+    private Session session = null;
 
     @BeforeEach
     void init() {
+        session = sessionFactory.openSession();
         TestDataBuilder.builderData(session);
         session.beginTransaction();
     }
@@ -45,14 +44,12 @@ public class UserQueryDslTest {
         List<User> actualResult = userQueryDsl.findAll(session);
 
         assertThat(actualResult).hasSize(3);
-
         List<String> firstNames = actualResult.stream().map(User::getFirstname).toList();
         assertThat(firstNames).containsExactlyInAnyOrder("Ivan","Petr", "Dima");
     }
 
     @Test
     void findAllByFirstName() {
-
         UserFilter userFilter = UserFilter.builder()
                 .firstname("Ivan")
                 .build();
@@ -60,7 +57,6 @@ public class UserQueryDslTest {
         List<User> actualResult = userQueryDsl.findAllByFirstName(session, userFilter);
 
         assertThat(actualResult).hasSize(1);
-
         assertThat(actualResult.get(0).getFirstname()).isEqualTo("Ivan");
     }
 
@@ -70,7 +66,6 @@ public class UserQueryDslTest {
         List<User> actualResult = userQueryDsl.findLimitedUsersOrderedByBirthday(session, limit);
 
         assertThat(actualResult).hasSize(limit);
-
         List<String> firstNames = actualResult.stream().map(User::getFirstname).toList();
         assertThat(firstNames).contains("Dima", "Ivan");
     }
@@ -84,7 +79,6 @@ public class UserQueryDslTest {
         List<PizzaToOrder> actualResult = userQueryDsl.findAllPizzaToOrderByPizzaName(session, pizzaFilter);
 
         assertThat(actualResult).hasSize(2);
-
         List<User> users = actualResult.stream().map(PizzaToOrder::getUser).toList();
         List<String> lastnames = users.stream().map(User::getLastname).toList();
         assertThat(lastnames).contains("Petrov", "Dimov");
@@ -99,7 +93,6 @@ public class UserQueryDslTest {
         List<OrderDetail> actualResult = userQueryDsl.findAllOrdersByPizzaName(session, pizzaFilter);
 
         assertThat(actualResult).hasSize(2);
-
         List<Order> orders = actualResult.stream().map(OrderDetail::getOrder).toList();
         List<BigDecimal> finalPrices = orders.stream().map(Order::getFinalPrice).toList();
         assertThat(finalPrices).contains(BigDecimal.valueOf(85),BigDecimal.valueOf(95));
@@ -122,7 +115,6 @@ public class UserQueryDslTest {
         List<Tuple> actualResult = userQueryDsl.findPizzaNamesWithAvgCountToOrderOrderedByPizzaName(session);
 
         assertThat(actualResult).hasSize(3);
-
         List<String> pizzaName = actualResult.stream().map(it -> it.get(0, String.class)).toList();
         assertThat(pizzaName).contains("Pepperoni", "Italian", "Four cheeses");
         List<Double> avgCountPizza = actualResult.stream().map(it -> it.get(1, Double.class)).toList();

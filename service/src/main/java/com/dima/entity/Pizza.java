@@ -1,5 +1,6 @@
 package com.dima.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,20 +15,20 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
-@ToString(exclude = {"pizzaIngredients", "pizzaToOrders"})
 @Builder
 @Entity
-public class Pizza {
+public class Pizza implements BaseEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(unique = true)
     private String name;
 
     @Builder.Default
@@ -37,4 +38,24 @@ public class Pizza {
     @Builder.Default
     @OneToMany(mappedBy = "pizza")
     private List<PizzaToOrder> pizzaToOrders = new ArrayList<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pizza pizza = (Pizza) o;
+        return Objects.equals(name, pizza.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Pizza{" +
+               "name='" + name + '\'' +
+               '}';
+    }
 }

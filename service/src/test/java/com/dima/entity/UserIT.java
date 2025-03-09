@@ -49,6 +49,7 @@ class UserIT {
         session.persist(user);
         session.flush();
         session.evict(user);
+
         User actualResult = session.get(User.class, user.getId());
 
         assertThat(actualResult).isEqualTo(user);

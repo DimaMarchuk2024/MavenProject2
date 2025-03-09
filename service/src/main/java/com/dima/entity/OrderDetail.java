@@ -15,15 +15,15 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
 @Builder
 @Entity
 @Table(name = "order_detail")
-public class OrderDetail {
+public class OrderDetail implements BaseEntity<Long>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,4 +38,28 @@ public class OrderDetail {
     private PizzaToOrder pizzaToOrder;
 
     private BigDecimal price;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderDetail that = (OrderDetail) o;
+        return Objects.equals(order.getId(), that.order.getId())
+               && Objects.equals(pizzaToOrder.getId(), that.pizzaToOrder.getId())
+               && Objects.equals(price, that.price);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(order.getId(), pizzaToOrder.getId(), price);
+    }
+
+    @Override
+    public String toString() {
+        return "OrderDetail{" +
+               "orderId=" + order.getId() +
+               ", pizzaToOrderId=" + pizzaToOrder.getId() +
+               ", price=" + price +
+               '}';
+    }
 }

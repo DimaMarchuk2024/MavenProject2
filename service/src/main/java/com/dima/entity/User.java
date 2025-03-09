@@ -12,16 +12,15 @@ import lombok.ToString;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
-@ToString(exclude = {"deliveryAddresses", "pizzaToOrders"})
 @Builder
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,4 +51,36 @@ public class User {
     @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<PizzaToOrder> pizzaToOrders = new ArrayList<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(firstname, user.firstname)
+               && Objects.equals(lastname, user.lastname)
+               && Objects.equals(phoneNumber, user.phoneNumber)
+               && Objects.equals(email, user.email)
+               && role == user.role
+               && Objects.equals(birthDate, user.birthDate)
+               && Objects.equals(password, user.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstname, lastname, phoneNumber, email, role, birthDate, password);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+               "firstname='" + firstname + '\'' +
+               ", lastname='" + lastname + '\'' +
+               ", phoneNumber='" + phoneNumber + '\'' +
+               ", email='" + email + '\'' +
+               ", role=" + role +
+               ", birthDate=" + birthDate +
+               ", password='" + password + '\'' +
+               '}';
+    }
 }

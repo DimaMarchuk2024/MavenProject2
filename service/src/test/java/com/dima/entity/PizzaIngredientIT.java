@@ -28,7 +28,6 @@ class PizzaIngredientIT {
     void afterTest() {
         session.getTransaction().rollback();
         session.close();
-        sessionFactory.close();
     }
 
     @Test

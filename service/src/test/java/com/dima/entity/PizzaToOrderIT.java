@@ -145,7 +145,7 @@ class PizzaToOrderIT {
                 .size(Size.BIG)
                 .type(TypeDough.TRADITIONAL)
                 .count(1)
-                .price(BigDecimal.valueOf(35))
+                .price(BigDecimal.valueOf(35).setScale(2))
                 .user(user)
                 .build();
     }
