@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -89,15 +90,15 @@ class OrderIT {
     private static Order getOrder2(Order order) {
         return Order.builder()
                 .id(order.getId())
-                .dateTime(Instant.now().plusSeconds(500))
-                .finalPrice(BigDecimal.valueOf(150))
+                .dateTime(Instant.now().plusSeconds(500).truncatedTo(ChronoUnit.SECONDS))
+                .finalPrice(BigDecimal.valueOf(150).setScale(2))
                 .build();
     }
 
     private static Order getOrder() {
         return Order.builder()
-                .dateTime(Instant.now())
-                .finalPrice(BigDecimal.valueOf(100))
+                .dateTime(Instant.now().truncatedTo(ChronoUnit.SECONDS))
+                .finalPrice(BigDecimal.valueOf(100).setScale(2))
                 .build();
     }
 }

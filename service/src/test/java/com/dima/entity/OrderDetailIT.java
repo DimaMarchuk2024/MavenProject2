@@ -177,7 +177,7 @@ class OrderDetailIT {
         return OrderDetail.builder()
                 .pizzaToOrder(pizzaToOrder)
                 .order(order)
-                .price(BigDecimal.valueOf(70))
+                .price(BigDecimal.valueOf(70).setScale(2))
                 .build();
     }
 }
