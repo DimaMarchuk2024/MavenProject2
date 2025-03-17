@@ -2,11 +2,13 @@ package com.dima.dao.impl;
 
 import com.dima.dao.DaoBase;
 import com.dima.entity.PizzaIngredient;
-import org.hibernate.Session;
+import jakarta.persistence.EntityManager;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class PizzaIngredientDao extends DaoBase<Integer, PizzaIngredient> {
 
-    public PizzaIngredientDao(Session session) {
-        super(PizzaIngredient.class, session);
+    public PizzaIngredientDao(EntityManager entityManager) {
+        super(PizzaIngredient.class, entityManager);
     }
 }

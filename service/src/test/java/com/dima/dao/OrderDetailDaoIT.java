@@ -3,7 +3,7 @@ package com.dima.dao;
 import com.dima.Enum.Role;
 import com.dima.Enum.Size;
 import com.dima.Enum.TypeDough;
-import com.dima.UserQueryDsl;
+import com.dima.config.ApplicationConfiguration;
 import com.dima.dao.impl.OrderDetailDao;
 import com.dima.entity.Order;
 import com.dima.entity.OrderDetail;
@@ -11,13 +11,14 @@ import com.dima.entity.Pizza;
 import com.dima.entity.PizzaToOrder;
 import com.dima.entity.User;
 import com.dima.filter.PizzaFilter;
-import com.dima.util.HibernateUtil;
 import com.dima.util.TestDataBuilder;
+import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -27,28 +28,33 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class OrderDetailDaoIT {
 
-    private static final SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
-    private final UserQueryDsl userQueryDsl = UserQueryDsl.getInstance();
-    private Session session;
-    private OrderDetailDao orderDetailDao;
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+
+    private final SessionFactory sessionFactory = context.getBean(SessionFactory.class);
+
+    private final OrderDetailDao orderDetailDao = context.getBean(OrderDetailDao.class);
+
+    private Session session = (Session) context.getBean(EntityManager.class);
 
     @BeforeEach
     void init() {
         session = sessionFactory.openSession();
-        orderDetailDao = new OrderDetailDao(session);
         session.beginTransaction();
         TestDataBuilder.builderData(session);
     }
 
     @AfterEach
-    void afterTest() {
+    void rollback() {
         session.getTransaction().rollback();
         session.close();
+        context.close();
     }
+
 
     @Test
     void findAllOrdersByPizzaName() {
@@ -56,7 +62,7 @@ class OrderDetailDaoIT {
                 .pizzaName("Italian")
                 .build();
 
-        List<OrderDetail> actualResult = userQueryDsl.findAllOrdersByPizzaName(session, pizzaFilter);
+        List<OrderDetail> actualResult = orderDetailDao.findAllOrdersByPizzaName(session, pizzaFilter);
 
         assertThat(actualResult).hasSize(2);
         List<Order> orders = actualResult.stream().map(OrderDetail::getOrder).toList();
