@@ -63,4 +63,9 @@ public class Ingredient implements BaseEntity<Integer> {
                ", price=" + price +
                '}';
     }
+
+    @Override
+    public Integer get() {
+        return id;
+    }
 }

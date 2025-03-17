@@ -94,4 +94,9 @@ public class PizzaToOrder implements BaseEntity<Long>{
                ", userId=" + user.getId() +
                '}';
     }
+
+    @Override
+    public Long get() {
+        return id;
+    }
 }

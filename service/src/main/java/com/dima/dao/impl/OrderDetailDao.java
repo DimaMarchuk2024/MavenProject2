@@ -7,10 +7,11 @@ import com.dima.filter.PizzaFilter;
 import com.dima.predicate.QPredicate;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.hibernate.Session;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Subgraph;
 import org.hibernate.graph.GraphSemantic;
-import org.hibernate.graph.RootGraph;
-import org.hibernate.graph.SubGraph;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -18,23 +19,28 @@ import static com.dima.entity.QOrderDetail.orderDetail;
 import static com.dima.entity.QPizza.pizza;
 import static com.dima.entity.QPizzaToOrder.pizzaToOrder;
 
+@Repository
 public class OrderDetailDao extends DaoBase<Long, OrderDetail> {
 
-    public OrderDetailDao(Session session) {
-        super(OrderDetail.class, session);
+    public OrderDetailDao(EntityManager entityManager) {
+        super(OrderDetail.class, entityManager);
     }
 
-    public List<OrderDetail> findAllOrdersByPizzaName(Session session, PizzaFilter pizzaFilter) {
-        RootGraph<OrderDetail> orderDetailGraph = session.createEntityGraph(OrderDetail.class);
+    /**
+     * Возвращает все заказы пицц, с указанным названием пиццы,
+     * упорядоченные по количеству пицц, а затем по финальной стоимости заказа
+     */
+    public List<OrderDetail> findAllOrdersByPizzaName(EntityManager entityManager, PizzaFilter pizzaFilter) {
+        EntityGraph<OrderDetail> orderDetailGraph = entityManager.createEntityGraph(OrderDetail.class);
         orderDetailGraph.addAttributeNodes("pizzaToOrder");
-        SubGraph<PizzaToOrder> pizzaToOrderSubGraph = orderDetailGraph.addSubgraph("pizzaToOrder", PizzaToOrder.class);
+        Subgraph<PizzaToOrder> pizzaToOrderSubGraph = orderDetailGraph.addSubgraph("pizzaToOrder", PizzaToOrder.class);
         pizzaToOrderSubGraph.addAttributeNodes("pizza");
 
         Predicate predicate = QPredicate.builder()
                 .add(pizzaFilter.getPizzaName(), pizza.name::eq)
                 .buildAnd();
 
-        return new JPAQuery<OrderDetail>(session)
+        return new JPAQuery<OrderDetail>(entityManager)
                 .select(orderDetail)
                 .from(orderDetail)
                 .join(orderDetail.pizzaToOrder, pizzaToOrder)

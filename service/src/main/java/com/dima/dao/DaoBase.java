@@ -1,9 +1,9 @@
 package com.dima.dao;
 
 import com.dima.entity.BaseEntity;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaQuery;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Session;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,33 +13,35 @@ import java.util.Optional;
 public abstract class DaoBase<K extends Serializable, E extends BaseEntity<K>> implements Dao<K, E> {
 
     private final Class<E> clazz;
-    private final Session session;
+
+    private final EntityManager entityManager;
+
     @Override
     public E save(E entity) {
-        session.persist(entity);
+        entityManager.persist(entity);
         return entity;
     }
 
     @Override
     public Optional<E> getById(K id) {
-        return Optional.ofNullable(session.find(clazz, id));
+        return Optional.ofNullable(entityManager.find(clazz, id));
     }
 
     @Override
     public void update(E entity) {
-        session.merge(entity);
+        entityManager.merge(entity);
     }
 
     @Override
     public List<E> findAll() {
-        CriteriaQuery<E> criteria = session.getCriteriaBuilder().createQuery(clazz);
+        CriteriaQuery<E> criteria = entityManager.getCriteriaBuilder().createQuery(clazz);
         criteria.from(clazz);
-        return session.createQuery(criteria).getResultList();
+        return entityManager.createQuery(criteria).getResultList();
     }
 
     @Override
     public void delete(E entity) {
-        session.remove(entity);
-        session.flush();
+        entityManager.remove(entity);
+        entityManager.flush();
     }
 }

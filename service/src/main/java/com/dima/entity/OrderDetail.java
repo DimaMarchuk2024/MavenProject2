@@ -62,4 +62,9 @@ public class OrderDetail implements BaseEntity<Long>{
                ", price=" + price +
                '}';
     }
+
+    @Override
+    public Long get() {
+        return id;
+    }
 }

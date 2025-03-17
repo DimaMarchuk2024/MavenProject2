@@ -2,11 +2,13 @@ package com.dima.dao.impl;
 
 import com.dima.dao.DaoBase;
 import com.dima.entity.Ingredient;
-import org.hibernate.Session;
+import jakarta.persistence.EntityManager;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class IngredientDao extends DaoBase<Integer, Ingredient> {
 
-    public IngredientDao(Session session) {
-        super(Ingredient.class, session);
+    public IngredientDao(EntityManager entityManager) {
+        super(Ingredient.class, entityManager);
     }
 }

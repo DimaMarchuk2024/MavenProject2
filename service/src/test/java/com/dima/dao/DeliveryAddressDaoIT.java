@@ -1,42 +1,49 @@
 package com.dima.dao;
 
 import com.dima.Enum.Role;
+import com.dima.config.ApplicationConfiguration;
 import com.dima.dao.impl.DeliveryAddressDao;
 import com.dima.entity.DeliveryAddress;
 import com.dima.entity.User;
-import com.dima.util.HibernateUtil;
 import com.dima.util.TestDataBuilder;
+import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class DeliveryAddressDaoIT {
 
-    private static final SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
-    private Session session;
-    private DeliveryAddressDao deliveryAddressDao;
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+
+    private final SessionFactory sessionFactory = context.getBean(SessionFactory.class);
+
+    private final DeliveryAddressDao deliveryAddressDao = context.getBean(DeliveryAddressDao.class);
+
+    private Session session = (Session) context.getBean(EntityManager.class);
 
     @BeforeEach
     void init() {
         session = sessionFactory.openSession();
-        deliveryAddressDao = new DeliveryAddressDao(session);
         session.beginTransaction();
         TestDataBuilder.builderData(session);
     }
 
     @AfterEach
-    void afterTest() {
+    void rollback() {
         session.getTransaction().rollback();
         session.close();
+        context.close();
     }
 
     @Test
@@ -84,7 +91,7 @@ class DeliveryAddressDaoIT {
         session.flush();
         session.clear();
 
-        DeliveryAddress actualResult = session.get(DeliveryAddress.class, deliveryAddress.getId());
+        DeliveryAddress actualResult = session.find(DeliveryAddress.class, deliveryAddress.getId());
 
         assertThat(actualResult.getUser()).isEqualTo(deliveryAddress2.getUser());
         assertThat(actualResult.getAddress()).isEqualTo(deliveryAddress2.getAddress());

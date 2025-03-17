@@ -67,4 +67,9 @@ public class PizzaIngredient implements BaseEntity<Integer> {
                ", ingredientId=" + ingredient.getId() +
                '}';
     }
+
+    @Override
+    public Integer get() {
+        return id;
+    }
 }

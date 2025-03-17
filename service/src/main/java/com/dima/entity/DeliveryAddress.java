@@ -56,4 +56,9 @@ public class DeliveryAddress implements BaseEntity<Long> {
                ", address='" + address +
                '}';
     }
+
+    @Override
+    public Long get() {
+        return id;
+    }
 }

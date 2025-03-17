@@ -3,19 +3,21 @@ package com.dima.dao;
 import com.dima.Enum.Role;
 import com.dima.Enum.Size;
 import com.dima.Enum.TypeDough;
+import com.dima.config.ApplicationConfiguration;
 import com.dima.dao.impl.IngredientToOrderDao;
 import com.dima.entity.Ingredient;
 import com.dima.entity.IngredientToOrder;
 import com.dima.entity.Pizza;
 import com.dima.entity.PizzaToOrder;
 import com.dima.entity.User;
-import com.dima.util.HibernateUtil;
 import com.dima.util.TestDataBuilder;
+import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,22 +30,26 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class IngredientToOrderDaoIT {
 
-    private static final SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
-    private Session session;
-    private IngredientToOrderDao ingredientToOrderDao;
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+
+    private final SessionFactory sessionFactory = context.getBean(SessionFactory.class);
+
+    private final IngredientToOrderDao ingredientToOrderDao = context.getBean(IngredientToOrderDao.class);
+
+    private Session session = (Session) context.getBean(EntityManager.class);
 
     @BeforeEach
     void init() {
         session = sessionFactory.openSession();
-        ingredientToOrderDao = new IngredientToOrderDao(session);
         session.beginTransaction();
         TestDataBuilder.builderData(session);
     }
 
     @AfterEach
-    void afterTest() {
+    void rollback() {
         session.getTransaction().rollback();
         session.close();
+        context.close();
     }
 
     @Test

@@ -2,7 +2,7 @@
 <module version="4">
   <component name="AdditionalModuleElements">
     <content url="file://$MODULE_DIR$/service" dumb="true">
-      <sourceFolder url="file://$MODULE_DIR$/service/target/generated-sources/annotations/com/dima/entity" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/service/target/generated-sources/annotations" isTestSource="false" generated="true" />
     </content>
   </component>
   <component name="FacetManager">

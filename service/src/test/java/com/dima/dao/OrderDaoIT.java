@@ -1,14 +1,16 @@
 package com.dima.dao;
 
+import com.dima.config.ApplicationConfiguration;
 import com.dima.dao.impl.OrderDao;
 import com.dima.entity.Order;
-import com.dima.util.HibernateUtil;
 import com.dima.util.TestDataBuilder;
+import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -17,26 +19,31 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class OrderDaoIT {
 
-    private static final SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
-    private Session session;
-    private OrderDao orderDao;
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+
+    private final SessionFactory sessionFactory = context.getBean(SessionFactory.class);
+
+    private final OrderDao orderDao = context.getBean(OrderDao.class);
+
+    private Session session = (Session) context.getBean(EntityManager.class);
 
     @BeforeEach
     void init() {
         session = sessionFactory.openSession();
-        orderDao = new OrderDao(session);
         session.beginTransaction();
         TestDataBuilder.builderData(session);
     }
 
     @AfterEach
-    void afterTest() {
+    void rollback() {
         session.getTransaction().rollback();
         session.close();
+        context.close();
     }
 
     @Test
