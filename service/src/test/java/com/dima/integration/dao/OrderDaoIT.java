@@ -1,16 +1,13 @@
-package com.dima.dao;
+package com.dima.integration.dao;
 
-import com.dima.config.ApplicationConfiguration;
 import com.dima.dao.impl.OrderDao;
 import com.dima.entity.Order;
+import com.dima.integration.annotation.IT;
 import com.dima.util.TestDataBuilder;
 import jakarta.persistence.EntityManager;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -22,28 +19,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@IT
+@RequiredArgsConstructor
 class OrderDaoIT {
 
-    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+    private final OrderDao orderDao;
 
-    private final SessionFactory sessionFactory = context.getBean(SessionFactory.class);
-
-    private final OrderDao orderDao = context.getBean(OrderDao.class);
-
-    private Session session = (Session) context.getBean(EntityManager.class);
+    private final EntityManager entityManager;
 
     @BeforeEach
     void init() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-        TestDataBuilder.builderData(session);
-    }
-
-    @AfterEach
-    void rollback() {
-        session.getTransaction().rollback();
-        session.close();
-        context.close();
+        TestDataBuilder.builderData(entityManager);
     }
 
     @Test
@@ -63,8 +49,8 @@ class OrderDaoIT {
     void findById() {
         Order order = getOrder();
         orderDao.save(order);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<Order> actualResult = orderDao.getById(order.getId());
 
@@ -76,10 +62,10 @@ class OrderDaoIT {
     void save() {
         Order order = getOrder();
         orderDao.save(order);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        Order actualResult = session.get(Order.class, order.getId());
+        Order actualResult = entityManager.find(Order.class, order.getId());
 
         assertNotNull(actualResult.getId());
     }
@@ -88,14 +74,14 @@ class OrderDaoIT {
     void update() {
         Order order = getOrder();
         orderDao.save(order);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
         Order order2 = getOrder2(order.getId());
         orderDao.update(order2);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        Order actualResult = session.get(Order.class, order.getId());
+        Order actualResult = entityManager.find(Order.class, order.getId());
 
         assertThat(actualResult.getDateTime()).isEqualTo(order2.getDateTime());
         assertThat(actualResult.getFinalPrice()).isEqualTo(order2.getFinalPrice());
@@ -105,12 +91,11 @@ class OrderDaoIT {
     void delete() {
         Order order = getOrder();
         orderDao.save(order);
-        session.flush();
-        session.clear();
+        entityManager.flush();
         orderDao.delete(order);
-        session.clear();
+        entityManager.clear();
 
-        Order actualResult = session.get(Order.class, order.getId());
+        Order actualResult = entityManager.find(Order.class, order.getId());
 
         assertNull(actualResult);
     }

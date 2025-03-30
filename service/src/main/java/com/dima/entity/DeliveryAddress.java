@@ -11,9 +11,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.Objects;
 
@@ -55,10 +53,5 @@ public class DeliveryAddress implements BaseEntity<Long> {
                "userId=" + user.getId() +
                ", address='" + address +
                '}';
-    }
-
-    @Override
-    public Long get() {
-        return id;
     }
 }

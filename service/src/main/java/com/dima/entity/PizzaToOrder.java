@@ -17,9 +17,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -32,14 +30,14 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "pizza_to_order")
-public class PizzaToOrder implements BaseEntity<Long>{
+public class PizzaToOrder implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "pizza_id",nullable = false)
+    @JoinColumn(name = "pizza_id", nullable = false)
     private Pizza pizza;
 
     @Enumerated(EnumType.STRING)
@@ -93,10 +91,5 @@ public class PizzaToOrder implements BaseEntity<Long>{
                ", price=" + price +
                ", userId=" + user.getId() +
                '}';
-    }
-
-    @Override
-    public Long get() {
-        return id;
     }
 }

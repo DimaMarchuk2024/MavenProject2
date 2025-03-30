@@ -30,7 +30,7 @@ public class OrderDetailDao extends DaoBase<Long, OrderDetail> {
      * Возвращает все заказы пицц, с указанным названием пиццы,
      * упорядоченные по количеству пицц, а затем по финальной стоимости заказа
      */
-    public List<OrderDetail> findAllOrdersByPizzaName(EntityManager entityManager, PizzaFilter pizzaFilter) {
+    public List<OrderDetail> findAllOrdersByFilter(EntityManager entityManager, PizzaFilter pizzaFilter) {
         EntityGraph<OrderDetail> orderDetailGraph = entityManager.createEntityGraph(OrderDetail.class);
         orderDetailGraph.addAttributeNodes("pizzaToOrder");
         Subgraph<PizzaToOrder> pizzaToOrderSubGraph = orderDetailGraph.addSubgraph("pizzaToOrder", PizzaToOrder.class);

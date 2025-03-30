@@ -1,17 +1,14 @@
-package com.dima.dao;
+package com.dima.integration.dao;
 
-import com.dima.config.ApplicationConfiguration;
 import com.dima.dao.impl.IngredientDao;
 import com.dima.entity.Ingredient;
 import com.dima.entity.Pizza;
+import com.dima.integration.annotation.IT;
 import com.dima.util.TestDataBuilder;
 import jakarta.persistence.EntityManager;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,28 +18,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@IT
+@RequiredArgsConstructor
 class IngredientDaoIT {
 
-    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+    private final IngredientDao ingredientDao;
 
-    private final SessionFactory sessionFactory = context.getBean(SessionFactory.class);
-
-    private final IngredientDao ingredientDao = context.getBean(IngredientDao.class);
-
-    private Session session = (Session) context.getBean(EntityManager.class);
+    private final EntityManager entityManager;
 
     @BeforeEach
     void init() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-        TestDataBuilder.builderData(session);
-    }
-
-    @AfterEach
-    void rollback() {
-        session.getTransaction().rollback();
-        session.close();
-        context.close();
+        TestDataBuilder.builderData(entityManager);
     }
 
     @Test
@@ -59,8 +45,8 @@ class IngredientDaoIT {
     void findById() {
         Ingredient ingredient = getIngredient();
         ingredientDao.save(ingredient);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<Ingredient> actualResult = ingredientDao.getById(ingredient.getId());
 
@@ -72,10 +58,10 @@ class IngredientDaoIT {
     void save() {
         Ingredient ingredient = getIngredient();
         ingredientDao.save(ingredient);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        Ingredient actualResult = session.get(Ingredient.class, ingredient.getId());
+        Ingredient actualResult = entityManager.find(Ingredient.class, ingredient.getId());
 
         assertNotNull(actualResult.getId());
     }
@@ -84,14 +70,14 @@ class IngredientDaoIT {
     void update() {
         Ingredient ingredient = getIngredient();
         ingredientDao.save(ingredient);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
         Ingredient ingredient2 = getIngredient2(ingredient.getId());
         ingredientDao.update(ingredient2);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        Ingredient actualResult = session.get(Ingredient.class, ingredient2.getId());
+        Ingredient actualResult = entityManager.find(Ingredient.class, ingredient2.getId());
 
         assertThat(actualResult.getName()).isEqualTo(ingredient2.getName());
     }
@@ -100,12 +86,11 @@ class IngredientDaoIT {
     void delete() {
         Ingredient ingredient = getIngredient();
         ingredientDao.save(ingredient);
-        session.flush();
-        session.clear();
+        entityManager.flush();
         ingredientDao.delete(ingredient);
-        session.clear();
+        entityManager.clear();
 
-        Pizza actualResult = session.get(Pizza.class, ingredient.getId());
+        Pizza actualResult = entityManager.find(Pizza.class, ingredient.getId());
 
         assertNull(actualResult);
     }

@@ -9,9 +9,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -62,10 +60,5 @@ public class Ingredient implements BaseEntity<Integer> {
                "name='" + name + '\'' +
                ", price=" + price +
                '}';
-    }
-
-    @Override
-    public Integer get() {
-        return id;
     }
 }

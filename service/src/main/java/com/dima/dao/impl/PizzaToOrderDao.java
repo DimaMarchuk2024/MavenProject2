@@ -26,7 +26,7 @@ public class PizzaToOrderDao extends DaoBase<Long, PizzaToOrder> {
     /**
      * Возвращает все пиццы для заказа (PizzaToOrder) с указанным названием
      */
-    public List<PizzaToOrder> findAllPizzaToOrderByPizzaName(EntityManager entityManager, PizzaFilter pizzaFilter) {
+    public List<PizzaToOrder> findAllPizzaToOrderByFilter(EntityManager entityManager, PizzaFilter pizzaFilter) {
         EntityGraph<PizzaToOrder> pizzaToOrderGraph = entityManager.createEntityGraph(PizzaToOrder.class);
         pizzaToOrderGraph.addAttributeNodes("pizza");
 
@@ -39,7 +39,7 @@ public class PizzaToOrderDao extends DaoBase<Long, PizzaToOrder> {
                 .from(pizzaToOrder)
                 .join(pizzaToOrder.pizza, pizza)
                 .where(predicate)
-                .setHint(GraphSemantic.LOAD.getJakartaHintName(), pizzaToOrderGraph)
+                .setHint(GraphSemantic.FETCH.getJakartaHintName(), pizzaToOrderGraph)
                 .fetch();
     }
 }

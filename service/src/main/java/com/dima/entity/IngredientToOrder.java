@@ -11,9 +11,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.Objects;
 
@@ -67,10 +65,5 @@ public class IngredientToOrder implements BaseEntity<Long> {
                "pizzaToOrderId=" + pizzaToOrder.getId() +
                ", ingredientId=" + ingredient.getId() +
                '}';
-    }
-
-    @Override
-    public Long get() {
-        return id;
     }
 }

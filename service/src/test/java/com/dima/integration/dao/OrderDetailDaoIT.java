@@ -1,9 +1,8 @@
-package com.dima.dao;
+package com.dima.integration.dao;
 
 import com.dima.Enum.Role;
 import com.dima.Enum.Size;
 import com.dima.Enum.TypeDough;
-import com.dima.config.ApplicationConfiguration;
 import com.dima.dao.impl.OrderDetailDao;
 import com.dima.entity.Order;
 import com.dima.entity.OrderDetail;
@@ -11,14 +10,12 @@ import com.dima.entity.Pizza;
 import com.dima.entity.PizzaToOrder;
 import com.dima.entity.User;
 import com.dima.filter.PizzaFilter;
+import com.dima.integration.annotation.IT;
 import com.dima.util.TestDataBuilder;
 import jakarta.persistence.EntityManager;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -31,38 +28,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@IT
+@RequiredArgsConstructor
 class OrderDetailDaoIT {
 
-    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+    private final OrderDetailDao orderDetailDao;
 
-    private final SessionFactory sessionFactory = context.getBean(SessionFactory.class);
-
-    private final OrderDetailDao orderDetailDao = context.getBean(OrderDetailDao.class);
-
-    private Session session = (Session) context.getBean(EntityManager.class);
+    private final EntityManager entityManager;
 
     @BeforeEach
     void init() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-        TestDataBuilder.builderData(session);
+        TestDataBuilder.builderData(entityManager);
     }
-
-    @AfterEach
-    void rollback() {
-        session.getTransaction().rollback();
-        session.close();
-        context.close();
-    }
-
 
     @Test
-    void findAllOrdersByPizzaName() {
+    void findAllOrdersByFilter() {
         PizzaFilter pizzaFilter = PizzaFilter.builder()
                 .pizzaName("Italian")
                 .build();
 
-        List<OrderDetail> actualResult = orderDetailDao.findAllOrdersByPizzaName(session, pizzaFilter);
+        List<OrderDetail> actualResult = orderDetailDao.findAllOrdersByFilter(entityManager, pizzaFilter);
 
         assertThat(actualResult).hasSize(2);
         List<Order> orders = actualResult.stream().map(OrderDetail::getOrder).toList();
@@ -89,8 +74,8 @@ class OrderDetailDaoIT {
     void findById() {
         OrderDetail orderDetail = getOrderDetail();
         orderDetailDao.save(orderDetail);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<OrderDetail> actualResult = orderDetailDao.getById(orderDetail.getId());
 
@@ -102,10 +87,10 @@ class OrderDetailDaoIT {
     void save() {
         OrderDetail orderDetail = getOrderDetail();
         orderDetailDao.save(orderDetail);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        OrderDetail actualResult = session.get(OrderDetail.class, orderDetail.getId());
+        OrderDetail actualResult = entityManager.find(OrderDetail.class, orderDetail.getId());
 
         assertNotNull(actualResult.getId());
     }
@@ -114,14 +99,14 @@ class OrderDetailDaoIT {
     void update() {
         OrderDetail orderDetail = getOrderDetail();
         orderDetailDao.save(orderDetail);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
         OrderDetail orderDetail2 = getOrderDetail2(orderDetail.getId());
         orderDetailDao.update(orderDetail2);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        OrderDetail actualResult = session.get(OrderDetail.class, orderDetail.getId());
+        OrderDetail actualResult = entityManager.find(OrderDetail.class, orderDetail.getId());
 
         assertThat(actualResult.getOrder()).isEqualTo(orderDetail2.getOrder());
         assertThat(actualResult.getPizzaToOrder()).isEqualTo(orderDetail2.getPizzaToOrder());
@@ -132,12 +117,11 @@ class OrderDetailDaoIT {
     void delete(){
         OrderDetail orderDetail = getOrderDetail();
         orderDetailDao.save(orderDetail);
-        session.flush();
-        session.clear();
+        entityManager.flush();
         orderDetailDao.delete(orderDetail);
-        session.clear();
+        entityManager.clear();
 
-        OrderDetail actualResult = session.get(OrderDetail.class, orderDetail.getId());
+        OrderDetail actualResult = entityManager.find(OrderDetail.class, orderDetail.getId());
 
         assertNull(actualResult);
     }
@@ -158,7 +142,7 @@ class OrderDetailDaoIT {
                 .dateTime(Instant.now().minus(5, ChronoUnit.DAYS).truncatedTo(ChronoUnit.SECONDS))
                 .finalPrice(BigDecimal.valueOf(80).setScale(2))
                 .build();
-        session.persist(order);
+        entityManager.persist(order);
 
         return order;
     }
@@ -175,7 +159,7 @@ class OrderDetailDaoIT {
                 .price(BigDecimal.valueOf(40).setScale(2))
                 .user(user)
                 .build();
-        session.persist(pizzaToOrder);
+        entityManager.persist(pizzaToOrder);
 
         return pizzaToOrder;
     }
@@ -190,7 +174,7 @@ class OrderDetailDaoIT {
                 .role(Role.ADMIN)
                 .password("999")
                 .build();
-        session.persist(user);
+        entityManager.persist(user);
 
         return user;
     }
@@ -199,7 +183,7 @@ class OrderDetailDaoIT {
         Pizza pizza = Pizza.builder()
                 .name("Vegan")
                 .build();
-        session.persist(pizza);
+        entityManager.persist(pizza);
         return pizza;
     }
 
@@ -220,7 +204,7 @@ class OrderDetailDaoIT {
                 .dateTime(Instant.now().minus(3, ChronoUnit.DAYS).truncatedTo(ChronoUnit.SECONDS))
                 .finalPrice(BigDecimal.valueOf(75).setScale(2))
                 .build();
-        session.persist(order2);
+        entityManager.persist(order2);
 
         return order2;
     }
@@ -237,7 +221,7 @@ class OrderDetailDaoIT {
                 .price(BigDecimal.valueOf(40).setScale(2))
                 .user(user2)
                 .build();
-        session.persist(pizzaToOrder2);
+        entityManager.persist(pizzaToOrder2);
 
         return pizzaToOrder2;
     }
@@ -252,7 +236,7 @@ class OrderDetailDaoIT {
                 .role(Role.USER)
                 .password("888")
                 .build();
-        session.persist(user);
+        entityManager.persist(user);
         return user;
     }
 
@@ -260,7 +244,7 @@ class OrderDetailDaoIT {
         Pizza pizza = Pizza.builder()
                 .name("Mexican")
                 .build();
-        session.persist(pizza);
+        entityManager.persist(pizza);
         return pizza;
     }
 }
