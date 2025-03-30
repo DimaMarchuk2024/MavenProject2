@@ -83,4 +83,9 @@ public class User implements BaseEntity<Long> {
                ", password='" + password + '\'' +
                '}';
     }
+
+    @Override
+    public Long get() {
+        return id;
+    }
 }

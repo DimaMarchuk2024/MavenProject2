@@ -58,4 +58,9 @@ public class Pizza implements BaseEntity<Integer> {
                "name='" + name + '\'' +
                '}';
     }
+
+    @Override
+    public Integer get() {
+        return id;
+    }
 }

@@ -68,4 +68,9 @@ public class IngredientToOrder implements BaseEntity<Long> {
                ", ingredientId=" + ingredient.getId() +
                '}';
     }
+
+    @Override
+    public Long get() {
+        return id;
+    }
 }

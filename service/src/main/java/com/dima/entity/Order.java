@@ -63,4 +63,9 @@ public class Order implements BaseEntity<Long> {
                ", finalPrice=" + finalPrice +
                '}';
     }
+
+    @Override
+    public Long get() {
+        return id;
+    }
 }
