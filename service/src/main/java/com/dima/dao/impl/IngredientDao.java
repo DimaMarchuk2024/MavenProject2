@@ -1,14 +1,9 @@
 package com.dima.dao.impl;
 
-import com.dima.dao.DaoBase;
 import com.dima.entity.Ingredient;
-import jakarta.persistence.EntityManager;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-@Repository
-public class IngredientDao extends DaoBase<Integer, Ingredient> {
+public interface IngredientDao extends JpaRepository<Ingredient, Integer>, QuerydslPredicateExecutor<Ingredient> {
 
-    public IngredientDao(EntityManager entityManager) {
-        super(Ingredient.class, entityManager);
-    }
 }

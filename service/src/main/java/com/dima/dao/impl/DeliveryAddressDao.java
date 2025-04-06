@@ -1,14 +1,20 @@
 package com.dima.dao.impl;
 
-import com.dima.dao.DaoBase;
 import com.dima.entity.DeliveryAddress;
-import jakarta.persistence.EntityManager;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-@Repository
-public class DeliveryAddressDao extends DaoBase<Long, DeliveryAddress> {
+public interface DeliveryAddressDao extends JpaRepository<DeliveryAddress, Long>,
+                                            FilterDeliveryAddressDao,
+                                            QuerydslPredicateExecutor<DeliveryAddress> {
 
-    public DeliveryAddressDao(EntityManager entityManager) {
-        super(DeliveryAddress.class, entityManager);
-    }
+    /**
+     * Найти все адреса доставки по фрагменту названия адреса без учета регистра,
+     * упорядоченные по названию адресов доставки.
+     **/
+    @Query(value = "select d from DeliveryAddress d where lower(d.address) like %:address% order by d.address")
+    Page<DeliveryAddress> findAllBy(String address, Pageable pageable);
 }
