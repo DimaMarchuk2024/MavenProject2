@@ -1,17 +1,14 @@
-package com.dima.dao;
+package com.dima.integration.dao;
 
 import com.dima.Enum.Role;
-import com.dima.config.ApplicationConfiguration;
 import com.dima.dao.impl.UserDao;
 import com.dima.entity.User;
+import com.dima.integration.annotation.IT;
 import com.dima.util.TestDataBuilder;
 import jakarta.persistence.EntityManager;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,27 +18,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@IT
+@RequiredArgsConstructor
 class UserDaoIT {
-    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
 
-    private final SessionFactory sessionFactory = context.getBean(SessionFactory.class);
+    private final UserDao userDao;
 
-    private final UserDao userDao = context.getBean(UserDao.class);
-
-    private Session session = (Session) context.getBean(EntityManager.class);
+    private final EntityManager entityManager;
 
     @BeforeEach
     void init() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-        TestDataBuilder.builderData(session);
-    }
-
-    @AfterEach
-    void rollback() {
-        session.getTransaction().rollback();
-        session.close();
-        context.close();
+        TestDataBuilder.builderData(entityManager);
     }
 
     @Test
@@ -57,8 +44,8 @@ class UserDaoIT {
     void findById() {
         User user = getUser();
         userDao.save(user);
-        session.flush();
-        session.evict(user);
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<User> actualResult = userDao.getById(user.getId());
 
@@ -70,10 +57,10 @@ class UserDaoIT {
     void save() {
         User user = getUser();
         userDao.save(user);
-        session.flush();
-        session.evict(user);
+        entityManager.flush();
+        entityManager.clear();
 
-        User actualResult = session.get(User.class, user.getId());
+        User actualResult = entityManager.find(User.class, user.getId());
 
         assertNotNull(actualResult.getId());
     }
@@ -82,14 +69,14 @@ class UserDaoIT {
     void update() {
         User user = getUser();
         userDao.save(user);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
         User user2 = getUser2(user.getId());
         userDao.update(user2);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        User actualResult = session.get(User.class, user.getId());
+        User actualResult = entityManager.find(User.class, user.getId());
 
         assertThat(actualResult.getFirstname()).isEqualTo(user2.getFirstname());
         assertThat(actualResult.getLastname()).isEqualTo(user2.getLastname());
@@ -104,12 +91,11 @@ class UserDaoIT {
     void delete() {
         User user = getUser();
         userDao.save(user);
-        session.flush();
-        session.clear();
+        entityManager.flush();
         userDao.delete(user);
-        session.clear();
+        entityManager.clear();
 
-        User actualResult = session.get(User.class, user.getId());
+        User actualResult = entityManager.find(User.class, user.getId());
 
         assertNull(actualResult);
     }

@@ -12,8 +12,8 @@ import com.dima.entity.Pizza;
 import com.dima.entity.PizzaIngredient;
 import com.dima.entity.PizzaToOrder;
 import com.dima.entity.User;
+import jakarta.persistence.EntityManager;
 import lombok.experimental.UtilityClass;
-import org.hibernate.Session;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -23,7 +23,7 @@ import java.time.temporal.ChronoUnit;
 @UtilityClass
 public class TestDataBuilder {
 
-    public void builderData(Session session) {
+    public void builderData(EntityManager session) {
 
         User ivan = saveUser(session, "Ivan", "Ivanov",
                 "11-11-111", "ivan@gmail.com", Role.ADMIN,
@@ -89,7 +89,6 @@ public class TestDataBuilder {
         saveIngredientToOrder(session, pizzaToOrderIvan, parmesan);
         saveIngredientToOrder(session, pizzaToOrderIvan, onion);
 
-
         Order order1 = saveOrder(session, Instant.now().minus(20, ChronoUnit.DAYS), BigDecimal.valueOf(85));
         Order order2 = saveOrder(session, Instant.now().minus(15, ChronoUnit.DAYS), BigDecimal.valueOf(60));
         Order order3 = saveOrder(session, Instant.now().minus(13, ChronoUnit.DAYS), BigDecimal.valueOf(90));
@@ -103,7 +102,7 @@ public class TestDataBuilder {
         saveOrderDetail(session, pizzaToOrderDima3, order4, BigDecimal.valueOf(25));
     }
 
-    private User saveUser(Session session,
+    private User saveUser(EntityManager session,
                           String firstname,
                           String lastname,
                           String phoneNumber,
@@ -125,7 +124,7 @@ public class TestDataBuilder {
         return user;
     }
 
-    private DeliveryAddress saveDeliveryAddress(Session session,
+    private DeliveryAddress saveDeliveryAddress(EntityManager session,
                                                 User user,
                                                 String address) {
         DeliveryAddress deliveryAddress = DeliveryAddress.builder()
@@ -137,7 +136,7 @@ public class TestDataBuilder {
         return deliveryAddress;
     }
 
-    private Pizza savePizza(Session session,
+    private Pizza savePizza(EntityManager session,
                             String name) {
         Pizza pizza = Pizza.builder()
                 .name(name)
@@ -146,7 +145,8 @@ public class TestDataBuilder {
 
         return pizza;
     }
-    private Ingredient saveIngredient(Session session,
+
+    private Ingredient saveIngredient(EntityManager session,
                                       String name,
                                       BigDecimal price) {
         Ingredient ingredient = Ingredient.builder()
@@ -158,7 +158,7 @@ public class TestDataBuilder {
         return ingredient;
     }
 
-    private PizzaIngredient savePizzaIngredient(Session session,
+    private PizzaIngredient savePizzaIngredient(EntityManager session,
                                                 Pizza pizza,
                                                 Ingredient ingredient) {
         PizzaIngredient pizzaIngredient = PizzaIngredient.builder()
@@ -170,7 +170,7 @@ public class TestDataBuilder {
         return pizzaIngredient;
     }
 
-    private PizzaToOrder savePizzaToOrder(Session session,
+    private PizzaToOrder savePizzaToOrder(EntityManager session,
                                           Pizza pizza,
                                           Size size,
                                           TypeDough type,
@@ -190,7 +190,7 @@ public class TestDataBuilder {
         return pizzaToOrder;
     }
 
-    private IngredientToOrder saveIngredientToOrder(Session session,
+    private IngredientToOrder saveIngredientToOrder(EntityManager session,
                                                     PizzaToOrder pizzaToOrder,
                                                     Ingredient ingredient) {
         IngredientToOrder ingredientToOrder = IngredientToOrder.builder()
@@ -202,7 +202,7 @@ public class TestDataBuilder {
         return ingredientToOrder;
     }
 
-    private Order saveOrder(Session session,
+    private Order saveOrder(EntityManager session,
                             Instant date,
                             BigDecimal finalPrice) {
         Order order = Order.builder()
@@ -214,7 +214,7 @@ public class TestDataBuilder {
         return order;
     }
 
-    private OrderDetail saveOrderDetail(Session session,
+    private OrderDetail saveOrderDetail(EntityManager session,
                                         PizzaToOrder pizzaToOrder,
                                         Order order,
                                         BigDecimal price) {
@@ -227,5 +227,4 @@ public class TestDataBuilder {
 
         return orderDetail;
     }
-
 }

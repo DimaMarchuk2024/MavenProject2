@@ -1,23 +1,20 @@
-package com.dima.dao;
+package com.dima.integration.dao;
 
 import com.dima.Enum.Role;
 import com.dima.Enum.Size;
 import com.dima.Enum.TypeDough;
-import com.dima.config.ApplicationConfiguration;
 import com.dima.dao.impl.IngredientToOrderDao;
 import com.dima.entity.Ingredient;
 import com.dima.entity.IngredientToOrder;
 import com.dima.entity.Pizza;
 import com.dima.entity.PizzaToOrder;
 import com.dima.entity.User;
+import com.dima.integration.annotation.IT;
 import com.dima.util.TestDataBuilder;
 import jakarta.persistence.EntityManager;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,28 +25,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@IT
+@RequiredArgsConstructor
 class IngredientToOrderDaoIT {
 
-    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+    private final IngredientToOrderDao ingredientToOrderDao;
 
-    private final SessionFactory sessionFactory = context.getBean(SessionFactory.class);
-
-    private final IngredientToOrderDao ingredientToOrderDao = context.getBean(IngredientToOrderDao.class);
-
-    private Session session = (Session) context.getBean(EntityManager.class);
+    private final EntityManager entityManager;
 
     @BeforeEach
     void init() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-        TestDataBuilder.builderData(session);
-    }
-
-    @AfterEach
-    void rollback() {
-        session.getTransaction().rollback();
-        session.close();
-        context.close();
+        TestDataBuilder.builderData(entityManager);
     }
 
     @Test
@@ -63,8 +49,8 @@ class IngredientToOrderDaoIT {
     void findById() {
         IngredientToOrder ingredientToOrder = getIngredientToOrder();
         ingredientToOrderDao.save(ingredientToOrder);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<IngredientToOrder> actualResult = ingredientToOrderDao.getById(ingredientToOrder.getId());
 
@@ -76,10 +62,10 @@ class IngredientToOrderDaoIT {
     void save() {
         IngredientToOrder ingredientToOrder = getIngredientToOrder();
         ingredientToOrderDao.save(ingredientToOrder);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        IngredientToOrder actualResult = session.get(IngredientToOrder.class, ingredientToOrder.getId());
+        IngredientToOrder actualResult = entityManager.find(IngredientToOrder.class, ingredientToOrder.getId());
 
         assertNotNull(actualResult.getId());
     }
@@ -88,14 +74,14 @@ class IngredientToOrderDaoIT {
     void update() {
         IngredientToOrder ingredientToOrder = getIngredientToOrder();
         ingredientToOrderDao.save(ingredientToOrder);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
         IngredientToOrder ingredientToOrder2 = getIngredientToOrder2(ingredientToOrder.getId());
         ingredientToOrderDao.update(ingredientToOrder2);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        IngredientToOrder actualResult = session.get(IngredientToOrder.class, ingredientToOrder.getId());
+        IngredientToOrder actualResult = entityManager.find(IngredientToOrder.class, ingredientToOrder.getId());
 
         assertThat(actualResult.getPizzaToOrder()).isEqualTo(ingredientToOrder2.getPizzaToOrder());
         assertThat(actualResult.getIngredient()).isEqualTo(ingredientToOrder2.getIngredient());
@@ -105,12 +91,11 @@ class IngredientToOrderDaoIT {
     void delete() {
         IngredientToOrder ingredientToOrder = getIngredientToOrder();
         ingredientToOrderDao.save(ingredientToOrder);
-        session.flush();
-        session.clear();
+        entityManager.flush();
         ingredientToOrderDao.delete(ingredientToOrder);
-        session.clear();
+        entityManager.clear();
 
-        IngredientToOrder actualResult = session.get(IngredientToOrder.class, ingredientToOrder.getId());
+        IngredientToOrder actualResult = entityManager.find(IngredientToOrder.class, ingredientToOrder.getId());
 
         assertNull(actualResult);
     }
@@ -137,7 +122,7 @@ class IngredientToOrderDaoIT {
                 .price(BigDecimal.valueOf(40).setScale(2))
                 .user(user)
                 .build();
-        session.persist(pizzaToOrder);
+        entityManager.persist(pizzaToOrder);
 
         return pizzaToOrder;
     }
@@ -152,7 +137,7 @@ class IngredientToOrderDaoIT {
                 .role(Role.ADMIN)
                 .password("999")
                 .build();
-        session.persist(user);
+        entityManager.persist(user);
 
         return user;
     }
@@ -161,7 +146,7 @@ class IngredientToOrderDaoIT {
         Pizza pizza = Pizza.builder()
                 .name("Vegan")
                 .build();
-        session.persist(pizza);
+        entityManager.persist(pizza);
 
         return pizza;
     }
@@ -171,7 +156,7 @@ class IngredientToOrderDaoIT {
                 .name("Tomatoes")
                 .price(BigDecimal.valueOf(2.5).setScale(2))
                 .build();
-        session.persist(ingredient);
+        entityManager.persist(ingredient);
 
         return ingredient;
     }
@@ -199,7 +184,7 @@ class IngredientToOrderDaoIT {
                 .price(BigDecimal.valueOf(40).setScale(2))
                 .user(user2)
                 .build();
-        session.persist(pizzaToOrder2);
+        entityManager.persist(pizzaToOrder2);
 
         return pizzaToOrder2;
     }
@@ -214,7 +199,7 @@ class IngredientToOrderDaoIT {
                 .role(Role.USER)
                 .password("888")
                 .build();
-        session.persist(user);
+        entityManager.persist(user);
 
         return user;
     }
@@ -223,7 +208,7 @@ class IngredientToOrderDaoIT {
         Pizza pizza = Pizza.builder()
                 .name("Mexican")
                 .build();
-        session.persist(pizza);
+        entityManager.persist(pizza);
 
         return pizza;
     }
@@ -233,7 +218,7 @@ class IngredientToOrderDaoIT {
                 .name("Pineapples")
                 .price(BigDecimal.valueOf(3.0).setScale(2))
                 .build();
-        session.persist(ingredient2);
+        entityManager.persist(ingredient2);
 
         return ingredient2;
     }

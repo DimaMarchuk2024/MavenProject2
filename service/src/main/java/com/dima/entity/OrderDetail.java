@@ -11,7 +11,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
@@ -61,10 +60,5 @@ public class OrderDetail implements BaseEntity<Long>{
                ", pizzaToOrderId=" + pizzaToOrder.getId() +
                ", price=" + price +
                '}';
-    }
-
-    @Override
-    public Long get() {
-        return id;
     }
 }

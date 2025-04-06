@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public interface BaseEntity <T extends Serializable> {
 
-    T get();
+    T getId();
 
     void setId(T id);
 }

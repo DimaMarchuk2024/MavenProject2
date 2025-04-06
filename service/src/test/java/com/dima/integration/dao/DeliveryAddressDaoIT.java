@@ -1,18 +1,15 @@
-package com.dima.dao;
+package com.dima.integration.dao;
 
 import com.dima.Enum.Role;
-import com.dima.config.ApplicationConfiguration;
 import com.dima.dao.impl.DeliveryAddressDao;
 import com.dima.entity.DeliveryAddress;
 import com.dima.entity.User;
+import com.dima.integration.annotation.IT;
 import com.dima.util.TestDataBuilder;
 import jakarta.persistence.EntityManager;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,28 +19,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@IT
+@RequiredArgsConstructor
 class DeliveryAddressDaoIT {
 
-    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+    private final DeliveryAddressDao deliveryAddressDao;
 
-    private final SessionFactory sessionFactory = context.getBean(SessionFactory.class);
-
-    private final DeliveryAddressDao deliveryAddressDao = context.getBean(DeliveryAddressDao.class);
-
-    private Session session = (Session) context.getBean(EntityManager.class);
+    private final EntityManager entityManager;
 
     @BeforeEach
     void init() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-        TestDataBuilder.builderData(session);
-    }
-
-    @AfterEach
-    void rollback() {
-        session.getTransaction().rollback();
-        session.close();
-        context.close();
+        TestDataBuilder.builderData(entityManager);
     }
 
     @Test
@@ -59,8 +45,8 @@ class DeliveryAddressDaoIT {
     void findById() {
         DeliveryAddress deliveryAddress = getDeliveryAddress();
         deliveryAddressDao.save(deliveryAddress);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<DeliveryAddress> actualResult = deliveryAddressDao.getById(deliveryAddress.getId());
 
@@ -72,10 +58,10 @@ class DeliveryAddressDaoIT {
     void save() {
         DeliveryAddress deliveryAddress = getDeliveryAddress();
         deliveryAddressDao.save(deliveryAddress);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        DeliveryAddress actualResult = session.get(DeliveryAddress.class, deliveryAddress.getId());
+        DeliveryAddress actualResult = entityManager.find(DeliveryAddress.class, deliveryAddress.getId());
 
         assertNotNull(actualResult.getId());
     }
@@ -84,14 +70,14 @@ class DeliveryAddressDaoIT {
     void update() {
         DeliveryAddress deliveryAddress = getDeliveryAddress();
         deliveryAddressDao.save(deliveryAddress);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
         DeliveryAddress deliveryAddress2 = getDeliveryAddress2(deliveryAddress.getId());
         deliveryAddressDao.update(deliveryAddress2);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        DeliveryAddress actualResult = session.find(DeliveryAddress.class, deliveryAddress.getId());
+        DeliveryAddress actualResult = entityManager.find(DeliveryAddress.class, deliveryAddress.getId());
 
         assertThat(actualResult.getUser()).isEqualTo(deliveryAddress2.getUser());
         assertThat(actualResult.getAddress()).isEqualTo(deliveryAddress2.getAddress());
@@ -101,12 +87,11 @@ class DeliveryAddressDaoIT {
     void delete() {
         DeliveryAddress deliveryAddress = getDeliveryAddress();
         deliveryAddressDao.save(deliveryAddress);
-        session.flush();
-        session.clear();
+        entityManager.flush();
         deliveryAddressDao.delete(deliveryAddress);
-        session.clear();
+        entityManager.clear();
 
-        DeliveryAddress actualResult = session.get(DeliveryAddress.class, deliveryAddress.getId());
+        DeliveryAddress actualResult = entityManager.find(DeliveryAddress.class, deliveryAddress.getId());
 
         assertNull(actualResult);
     }
@@ -130,7 +115,7 @@ class DeliveryAddressDaoIT {
                 .role(Role.ADMIN)
                 .password("999")
                 .build();
-        session.persist(user);
+        entityManager.persist(user);
 
         return user;
     }
@@ -155,7 +140,7 @@ class DeliveryAddressDaoIT {
                 .role(Role.USER)
                 .password("888")
                 .build();
-        session.persist(user);
+        entityManager.persist(user);
 
         return user;
     }

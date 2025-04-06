@@ -9,9 +9,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,10 +55,5 @@ public class Pizza implements BaseEntity<Integer> {
         return "Pizza{" +
                "name='" + name + '\'' +
                '}';
-    }
-
-    @Override
-    public Integer get() {
-        return id;
     }
 }

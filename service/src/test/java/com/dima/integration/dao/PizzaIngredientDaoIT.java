@@ -1,18 +1,15 @@
-package com.dima.dao;
+package com.dima.integration.dao;
 
-import com.dima.config.ApplicationConfiguration;
 import com.dima.dao.impl.PizzaIngredientDao;
 import com.dima.entity.Ingredient;
 import com.dima.entity.Pizza;
 import com.dima.entity.PizzaIngredient;
+import com.dima.integration.annotation.IT;
 import com.dima.util.TestDataBuilder;
 import jakarta.persistence.EntityManager;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,29 +19,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-
+@IT
+@RequiredArgsConstructor
 class PizzaIngredientDaoIT {
 
-    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+    private final PizzaIngredientDao pizzaIngredientDao;
 
-    private final SessionFactory sessionFactory = context.getBean(SessionFactory.class);
-
-    private final PizzaIngredientDao pizzaIngredientDao = context.getBean(PizzaIngredientDao.class);
-
-    private Session session = (Session) context.getBean(EntityManager.class);
+    private final EntityManager entityManager;
 
     @BeforeEach
     void init() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-        TestDataBuilder.builderData(session);
-    }
-
-    @AfterEach
-    void rollback() {
-        session.getTransaction().rollback();
-        session.close();
-        context.close();
+        TestDataBuilder.builderData(entityManager);
     }
 
     @Test
@@ -58,8 +43,8 @@ class PizzaIngredientDaoIT {
     void findById() {
         PizzaIngredient pizzaIngredient = getPizzaIngredient();
         pizzaIngredientDao.save(pizzaIngredient);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<PizzaIngredient> actualResult = pizzaIngredientDao.getById(pizzaIngredient.getId());
 
@@ -71,10 +56,10 @@ class PizzaIngredientDaoIT {
     void save() {
         PizzaIngredient pizzaIngredient = getPizzaIngredient();
         pizzaIngredientDao.save(pizzaIngredient);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        PizzaIngredient actualResult = session.get(PizzaIngredient.class, pizzaIngredient.getId());
+        PizzaIngredient actualResult = entityManager.find(PizzaIngredient.class, pizzaIngredient.getId());
 
         assertNotNull(actualResult.getId());
     }
@@ -83,14 +68,14 @@ class PizzaIngredientDaoIT {
     void update() {
         PizzaIngredient pizzaIngredient = getPizzaIngredient();
         pizzaIngredientDao.save(pizzaIngredient);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
         PizzaIngredient pizzaIngredient2 = getPizzaIngredient2(pizzaIngredient.getId());
         pizzaIngredientDao.update(pizzaIngredient2);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
-        PizzaIngredient actualResult = session.get(PizzaIngredient.class, pizzaIngredient2.getId());
+        PizzaIngredient actualResult = entityManager.find(PizzaIngredient.class, pizzaIngredient2.getId());
 
         assertThat(actualResult.getPizza()).isEqualTo(pizzaIngredient2.getPizza());
         assertThat(actualResult.getIngredient()).isEqualTo(pizzaIngredient2.getIngredient());
@@ -100,12 +85,11 @@ class PizzaIngredientDaoIT {
     void delete() {
         PizzaIngredient pizzaIngredient = getPizzaIngredient();
         pizzaIngredientDao.save(pizzaIngredient);
-        session.flush();
-        session.clear();
+        entityManager.flush();
         pizzaIngredientDao.delete(pizzaIngredient);
-        session.clear();
+        entityManager.clear();
 
-        PizzaIngredient actualResult = session.get(PizzaIngredient.class, pizzaIngredient.getId());
+        PizzaIngredient actualResult = entityManager.find(PizzaIngredient.class, pizzaIngredient.getId());
 
         assertNull(actualResult);
     }
@@ -124,7 +108,7 @@ class PizzaIngredientDaoIT {
         Pizza pizza = Pizza.builder()
                 .name("Vegan")
                 .build();
-        session.persist(pizza);
+        entityManager.persist(pizza);
 
         return pizza;
     }
@@ -134,7 +118,7 @@ class PizzaIngredientDaoIT {
                 .name("Tomatoes")
                 .price(BigDecimal.valueOf(2.5).setScale(2))
                 .build();
-        session.persist(ingredient);
+        entityManager.persist(ingredient);
 
         return ingredient;
     }
@@ -154,7 +138,7 @@ class PizzaIngredientDaoIT {
         Pizza pizza2 = Pizza.builder()
                 .name("Mexican")
                 .build();
-        session.persist(pizza2);
+        entityManager.persist(pizza2);
 
         return pizza2;
     }
@@ -164,7 +148,7 @@ class PizzaIngredientDaoIT {
                 .name("Pineapples")
                 .price(BigDecimal.valueOf(3.0).setScale(2))
                 .build();
-        session.persist(ingredient2);
+        entityManager.persist(ingredient2);
 
         return ingredient2;
     }
