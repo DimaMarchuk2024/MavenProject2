@@ -1,14 +1,30 @@
 package com.dima.dao.impl;
 
-import com.dima.dao.DaoBase;
 import com.dima.entity.User;
-import jakarta.persistence.EntityManager;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-@Repository
-public class UserDao extends DaoBase<Long, User> {
+import java.math.BigDecimal;
+import java.util.List;
 
-    public UserDao(EntityManager entityManager) {
-        super(User.class, entityManager);
-    }
+public interface UserDao extends JpaRepository<User, Long>, FilterUserDao, QuerydslPredicateExecutor<User> {
+
+    /**
+     Найти всех пользователей, заказавших пиццу определенного названия,
+     упорядоченные сначала по имени, а потом по фамилии
+     */
+    @Query("select u from User u join fetch u.pizzaToOrders pto join fetch pto.pizza p where lower(p.name) like %:pizzaName% " +
+           "order by u.firstname, u.lastname")
+    List<User> findAllByPizzaName(String pizzaName);
+
+    /**
+     * Найти всех пользователей, сделавших заказ больше определенной суммы,
+     * упорядоченные по сумме заказа (final price)
+     */
+    @EntityGraph(attributePaths = {"pizzaToOrders"})
+    @Query("select u from User u join u.pizzaToOrders pto join pto.orderDetails od join od.order o " +
+           "where o.finalPrice > :finalPrice order by o.finalPrice")
+    List<User> findAllByOrderFinalPrice(BigDecimal finalPrice);
 }

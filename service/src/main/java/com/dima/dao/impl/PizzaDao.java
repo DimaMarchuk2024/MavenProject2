@@ -1,14 +1,9 @@
 package com.dima.dao.impl;
 
-import com.dima.dao.DaoBase;
 import com.dima.entity.Pizza;
-import jakarta.persistence.EntityManager;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-@Repository
-public class PizzaDao extends DaoBase<Integer, Pizza> {
+public interface PizzaDao extends JpaRepository<Pizza, Integer>, QuerydslPredicateExecutor<Pizza> {
 
-    public PizzaDao(EntityManager entityManager) {
-        super(Pizza.class, entityManager);
-    }
 }

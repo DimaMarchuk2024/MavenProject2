@@ -1,14 +1,10 @@
 package com.dima.dao.impl;
 
-import com.dima.dao.DaoBase;
 import com.dima.entity.IngredientToOrder;
-import jakarta.persistence.EntityManager;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-@Repository
-public class IngredientToOrderDao extends DaoBase<Long, IngredientToOrder> {
+public interface IngredientToOrderDao extends JpaRepository<IngredientToOrder, Long>,
+                                              QuerydslPredicateExecutor<IngredientToOrder> {
 
-    public IngredientToOrderDao(EntityManager entityManager) {
-        super(IngredientToOrder.class, entityManager);
-    }
 }

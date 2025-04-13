@@ -1,45 +1,11 @@
 package com.dima.dao.impl;
 
-import com.dima.dao.DaoBase;
 import com.dima.entity.PizzaToOrder;
-import com.dima.filter.PizzaFilter;
-import com.dima.predicate.QPredicate;
-import com.querydsl.core.types.Predicate;
-import com.querydsl.jpa.impl.JPAQuery;
-import jakarta.persistence.EntityGraph;
-import jakarta.persistence.EntityManager;
-import org.hibernate.graph.GraphSemantic;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-import java.util.List;
+public interface PizzaToOrderDao  extends JpaRepository<PizzaToOrder, Long>,
+                                          QuerydslPredicateExecutor<PizzaToOrder>,
+                                          FilterPizzaToOrderDao {
 
-import static com.dima.entity.QPizza.pizza;
-import static com.dima.entity.QPizzaToOrder.pizzaToOrder;
-
-@Repository
-public class PizzaToOrderDao extends DaoBase<Long, PizzaToOrder> {
-
-    public PizzaToOrderDao(EntityManager entityManager) {
-        super(PizzaToOrder.class, entityManager);
-    }
-
-    /**
-     * Возвращает все пиццы для заказа (PizzaToOrder) с указанным названием
-     */
-    public List<PizzaToOrder> findAllPizzaToOrderByFilter(EntityManager entityManager, PizzaFilter pizzaFilter) {
-        EntityGraph<PizzaToOrder> pizzaToOrderGraph = entityManager.createEntityGraph(PizzaToOrder.class);
-        pizzaToOrderGraph.addAttributeNodes("pizza");
-
-        Predicate predicate = QPredicate.builder()
-                .add(pizzaFilter.getPizzaName(), pizza.name::eq)
-                .buildAnd();
-
-        return new JPAQuery<PizzaToOrder>(entityManager)
-                .select(pizzaToOrder)
-                .from(pizzaToOrder)
-                .join(pizzaToOrder.pizza, pizza)
-                .where(predicate)
-                .setHint(GraphSemantic.FETCH.getJakartaHintName(), pizzaToOrderGraph)
-                .fetch();
-    }
 }
