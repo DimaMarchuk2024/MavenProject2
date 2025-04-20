@@ -30,7 +30,7 @@ public class FilterUserDaoImpl implements FilterUserDao {
                 .add(userFilter.getBirthDate(), user.birthDate::before)
                 .add(userFilter.getPhoneNumber(), user.phoneNumber::containsIgnoreCase)
                 .add(userFilter.getEmail(), user.email::containsIgnoreCase)
-                .buildOr();
+                .buildAnd();
 
         return new JPAQuery<User>(entityManager)
                 .select(user)
