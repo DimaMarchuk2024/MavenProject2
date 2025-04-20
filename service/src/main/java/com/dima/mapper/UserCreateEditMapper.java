@@ -22,7 +22,7 @@ public class UserCreateEditMapper implements Mapper<UserCreateEditDto, User>{
         return user;
     }
 
-    private static void copy(UserCreateEditDto userCreateEditDto, User user) {
+    public static void copy(UserCreateEditDto userCreateEditDto, User user) {
         user.setFirstname(userCreateEditDto.getFirstname());
         user.setLastname(userCreateEditDto.getLastname());
         user.setPhoneNumber(userCreateEditDto.getPhoneNumber());

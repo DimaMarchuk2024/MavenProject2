@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static com.dima.dto.UserCreateEditDto.Fields.birthDate;
 import static com.dima.dto.UserCreateEditDto.Fields.email;
@@ -19,6 +20,7 @@ import static com.dima.dto.UserCreateEditDto.Fields.lastname;
 import static com.dima.dto.UserCreateEditDto.Fields.password;
 import static com.dima.dto.UserCreateEditDto.Fields.phoneNumber;
 import static com.dima.dto.UserCreateEditDto.Fields.role;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -79,6 +81,12 @@ class UserControllerIT {
                         status().is3xxRedirection(),
                         redirectedUrlPattern("/users/{\\d+}")
                 );
+        Optional<UserReadDto> actualResult = userservice.findAll()
+                .stream()
+                .filter(userReadDto -> userReadDto.getEmail().equals("savasava@gmail.com"))
+                .findAny();
+
+        assertTrue(actualResult.isPresent());
     }
 
     @Test
@@ -92,7 +100,7 @@ class UserControllerIT {
                         .param(role, "ADMIN")
                         .param(birthDate, "2000-12-21")
                         .param(password, "999")
-                        .param("id", "1"))
+                        .param("id", String.valueOf(user.getId())))
 
                 .andExpectAll(
                         status().is3xxRedirection(),

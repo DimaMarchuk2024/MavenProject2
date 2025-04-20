@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>DeliveryAddresses</title>
+</head>
+<body>
+<form action="/deliveryAddresses">
+    <label for="address">Address:
+        <input id="address" type="text" name="address" th:value="${String}">
+    </label>
+    <div>
+        <label for="page">Page:
+            <input id="page" type="number" name="page" th:value="${deliveryAddresses.metadata.page}">
+        </label>
+        <label for="size">Size:
+            <input id="size" type="number" name="size" th:value="${deliveryAddresses.metadata.size}">
+        </label>
+    </div>
+    <button type="submit">Filter</button>
+</form>
+<div th:each="deliveryAddress : ${deliveryAddresses.content}">
+    <a th:href="@{'/users/' + ${user.id}}"
+       th:each="user : ${users}"
+       th:if="${deliveryAddress.user == user}"
+       th:text="|${deliveryAddress.address} ${user.phoneNumber} |">DeliveryAddress User</a>
+</div>
+</body>
+</html>
