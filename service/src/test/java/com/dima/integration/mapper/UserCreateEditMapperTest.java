@@ -3,21 +3,25 @@ package com.dima.integration.mapper;
 import com.dima.Enum.Role;
 import com.dima.dto.UserCreateEditDto;
 import com.dima.entity.User;
-import com.dima.integration.annotation.IT;
 import com.dima.mapper.UserCreateEditMapper;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
-@IT
-@RequiredArgsConstructor
+@ExtendWith(MockitoExtension.class)
 public class UserCreateEditMapperTest {
-    
-    private final UserCreateEditMapper userCreateEditMapper;
+
+    @Mock
+    private UserCreateEditMapper userCreateEditMapper;
 
     @Test
-    void copySuccess() {
+    void mapSuccess() {
         UserCreateEditDto userCreateEditDto = UserCreateEditDto.builder()
                 .firstname("Vova")
                 .lastname("Vovan")
@@ -34,20 +38,21 @@ public class UserCreateEditMapperTest {
                 .role(Role.ADMIN)
                 .password("555")
                 .build();
+        doReturn(expectedResult).when(userCreateEditMapper).map(userCreateEditDto);
 
-        UserCreateEditMapper.copy(userCreateEditDto, expectedResult);
+        User actualResult = userCreateEditMapper.map(userCreateEditDto);
 
-        assertThat(userCreateEditDto.getFirstname()).isEqualTo(expectedResult.getFirstname());
-        assertThat(userCreateEditDto.getLastname()).isEqualTo(expectedResult.getLastname());
-        assertThat(userCreateEditDto.getPhoneNumber()).isEqualTo(expectedResult.getPhoneNumber());
-        assertThat(userCreateEditDto.getEmail()).isEqualTo(expectedResult.getEmail());
-        assertThat(userCreateEditDto.getRole().name()).isEqualTo(expectedResult.getRole().name());
-        assertThat(userCreateEditDto.getPassword()).isEqualTo(expectedResult.getPassword());
+        verify(userCreateEditMapper).map(userCreateEditDto);
+        assertThat(userCreateEditDto.getFirstname()).isEqualTo(actualResult.getFirstname());
+        assertThat(userCreateEditDto.getLastname()).isEqualTo(actualResult.getLastname());
+        assertThat(userCreateEditDto.getPhoneNumber()).isEqualTo(actualResult.getPhoneNumber());
+        assertThat(userCreateEditDto.getEmail()).isEqualTo(actualResult.getEmail());
+        assertThat(userCreateEditDto.getRole().name()).isEqualTo(actualResult.getRole().name());
+        assertThat(userCreateEditDto.getPassword()).isEqualTo(actualResult.getPassword());
     }
 
     @Test
-    void copyFail() {
-        User user = User.builder().build();
+    void mapFail() {
         UserCreateEditDto userCreateEditDto = UserCreateEditDto.builder()
                 .firstname("Vova")
                 .lastname("Vovan")
@@ -64,9 +69,16 @@ public class UserCreateEditMapperTest {
                 .role(Role.USER)
                 .password("777")
                 .build();
+        doReturn(expectedResult).when(userCreateEditMapper).map(userCreateEditDto);
 
-        UserCreateEditMapper.copy(userCreateEditDto, user);
+        User actualResult = userCreateEditMapper.map(userCreateEditDto);
 
-        assertThat(user.getFirstname()).isNotEqualTo(expectedResult.getFirstname());
+        verify(userCreateEditMapper).map(userCreateEditDto);
+        assertNotEquals(userCreateEditDto.getFirstname(), actualResult.getFirstname());
+        assertNotEquals(userCreateEditDto.getLastname(), actualResult.getLastname());
+        assertNotEquals(userCreateEditDto.getPhoneNumber(), actualResult.getPhoneNumber());
+        assertNotEquals(userCreateEditDto.getEmail(), actualResult.getEmail());
+        assertNotEquals(userCreateEditDto.getRole().name(), actualResult.getRole().name());
+        assertNotEquals(userCreateEditDto.getPassword(), actualResult.getPassword());
     }
 }

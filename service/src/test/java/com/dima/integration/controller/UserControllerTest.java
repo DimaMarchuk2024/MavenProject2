@@ -3,7 +3,6 @@ package com.dima.integration.controller;
 import com.dima.Enum.Role;
 import com.dima.dto.PageResponse;
 import com.dima.dto.UserReadDto;
-import com.dima.integration.annotation.IT;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -13,7 +12,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@IT
 class UserControllerTest {
 
     @Test

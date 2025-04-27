@@ -8,6 +8,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserDao extends JpaRepository<User, Long>, FilterUserDao, QuerydslPredicateExecutor<User> {
 
@@ -27,4 +28,6 @@ public interface UserDao extends JpaRepository<User, Long>, FilterUserDao, Query
     @Query("select u from User u join u.pizzaToOrders pto join pto.orderDetails od join od.order o " +
            "where o.finalPrice > :finalPrice order by o.finalPrice")
     List<User> findAllByOrderFinalPrice(BigDecimal finalPrice);
+
+    Optional<User> findByEmail(String email);
 }

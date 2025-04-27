@@ -68,7 +68,8 @@ public class UserController {
             redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
             return "redirect:/users/registration";
         }
-        return "redirect:/users/" + userService.create(userCreateEditDto).getId();
+        userService.create(userCreateEditDto);
+        return "redirect:/login";
     }
 
     @PostMapping("/{id}/update")
@@ -83,7 +84,6 @@ public class UserController {
         if (!userService.delete(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-
         return "redirect:/users";
     }
 }

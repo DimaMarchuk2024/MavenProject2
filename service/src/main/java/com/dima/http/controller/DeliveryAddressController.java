@@ -3,9 +3,7 @@ package com.dima.http.controller;
 import com.dima.dto.DeliveryAddressCreateEditDto;
 import com.dima.dto.DeliveryAddressReadDto;
 import com.dima.dto.PageResponse;
-import com.dima.dto.UserReadDto;
 import com.dima.service.DeliveryAddressService;
-import com.dima.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,26 +19,23 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/deliveryAddresses")
+@RequestMapping("/delivery-addresses")
 public class DeliveryAddressController {
 
     private final DeliveryAddressService deliveryAddressService;
-    private final UserService userService;
 
     @GetMapping
     public String findAllBy(Model model, String address, Pageable pageable) {
         Page<DeliveryAddressReadDto> page = deliveryAddressService.findAllBy(address, pageable);
         model.addAttribute("deliveryAddresses", PageResponse.of(page));
-        model.addAttribute("users", userService.findAll());
 
         return "deliveryAddress/deliveryAddresses";
     }
 
     @GetMapping("/{id}")
-    public String findById(@PathVariable("id") Long id, Model model, UserReadDto userReadDto) {
+    public String findById(@PathVariable("id") Long id, Model model) {
         return deliveryAddressService.findById(id)
                 .map(addressReadDto -> {
-                    model.addAttribute("user", userReadDto);
                     model.addAttribute("address", addressReadDto);
                     return "deliveryAddress/deliveryAddress";
                 })
@@ -49,13 +44,13 @@ public class DeliveryAddressController {
 
     @PostMapping
     public String create(@ModelAttribute DeliveryAddressCreateEditDto deliveryAddressCreateEditDto) {
-        return "redirect:/deliveryAddresses/" + deliveryAddressService.create(deliveryAddressCreateEditDto).getId();
+        return "redirect:/delivery-addresses/" + deliveryAddressService.create(deliveryAddressCreateEditDto).getId();
     }
 
     @PostMapping("/{id}/update")
     public String update(@PathVariable("id") Long id, @ModelAttribute DeliveryAddressCreateEditDto deliveryAddressCreateEditDto) {
         return deliveryAddressService.update(id, deliveryAddressCreateEditDto)
-                .map(it -> "redirect:/deliveryAddresses/{id}")
+                .map(it -> "redirect:/delivery-addresses/{id}")
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
@@ -64,7 +59,7 @@ public class DeliveryAddressController {
         if (!deliveryAddressService.delete(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return "redirect:/deliveryAddresses";
+        return "redirect:/delivery-addresses";
     }
 }
 

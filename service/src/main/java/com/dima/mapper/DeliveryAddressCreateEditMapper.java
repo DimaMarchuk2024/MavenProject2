@@ -34,10 +34,10 @@ public class DeliveryAddressCreateEditMapper implements Mapper<DeliveryAddressCr
         deliveryAddress.setUser(getUser(deliveryAddressCreateEditDto.getUserId()));
     }
 
-    public User getUser(Long userId) {
+    private User getUser(Long userId) {
         return Optional.ofNullable(userId)
                 .flatMap(userDao::findById)
-                .orElse(null);
+                .orElseThrow();
     }
 }
 
