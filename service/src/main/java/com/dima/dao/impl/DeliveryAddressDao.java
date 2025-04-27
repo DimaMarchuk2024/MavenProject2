@@ -15,6 +15,7 @@ public interface DeliveryAddressDao extends JpaRepository<DeliveryAddress, Long>
      * Найти все адреса доставки по фрагменту названия адреса без учета регистра,
      * упорядоченные по названию адресов доставки.
      **/
-    @Query(value = "select d from DeliveryAddress d where lower(d.address) like %:address% order by d.address")
+    @Query(value = "select d from DeliveryAddress d " +
+                   "where lower(d.address) like %:address% order by d.address")
     Page<DeliveryAddress> findAllBy(String address, Pageable pageable);
 }
