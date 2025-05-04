@@ -1,6 +1,7 @@
 package com.dima.integration.annotation;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,5 +19,6 @@ import java.lang.annotation.Target;
 @Sql({
         "classpath:sql/data.sql"
 })
+@WithMockUser(username = "test@gmail.com", password = "123", authorities = {"ADMIN", "USER"})
 public @interface IT {
 }

@@ -32,13 +32,13 @@ CREATE TABLE pizza_ingredient
 CREATE TABLE users
 (
     id           BIGSERIAL PRIMARY KEY,
-    firstname    VARCHAR(64)        NOT NULL,
-    lastname     VARCHAR(64)        NOT NULL,
-    phone_number VARCHAR(64) UNIQUE NOT NULL,
-    email        VARCHAR(64) UNIQUE NOT NULL,
-    role         VARCHAR(32)        NOT NULL,
+    firstname    VARCHAR(64)                     NOT NULL,
+    lastname     VARCHAR(64)                     NOT NULL,
+    phone_number VARCHAR(64) UNIQUE              NOT NULL,
+    email        VARCHAR(64) UNIQUE              NOT NULL,
+    role         VARCHAR(32)                     NOT NULL,
     birth_date   DATE,
-    password     VARCHAR(64)        NOT NULL
+    password     VARCHAR(128) DEFAULT '{noop}123'
 );
 --rollback DROP TABLE users;
 

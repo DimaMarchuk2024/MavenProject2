@@ -5,7 +5,8 @@
     <title>DeliveryAddresses</title>
 </head>
 <body>
-<form action="/deliveryAddresses">
+<div th:insert="~{fragment :: header}"></div>
+<form action="/delivery-addresses">
     <label for="address">Address:
         <input id="address" type="text" name="address" th:value="${String}">
     </label>
@@ -20,10 +21,8 @@
     <button type="submit">Filter</button>
 </form>
 <div th:each="deliveryAddress : ${deliveryAddresses.content}">
-    <a th:href="@{'/users/' + ${user.id}}"
-       th:each="user : ${users}"
-       th:if="${deliveryAddress.user == user}"
-       th:text="|${deliveryAddress.address} ${user.phoneNumber} |">DeliveryAddress User</a>
+    <a th:href="@{'/users/' + ${deliveryAddress.user.id}}"
+       th:text="|${deliveryAddress.address} ${deliveryAddress.user.email}|">DeliveryAddress Email</a>
 </div>
 </body>
 </html>
