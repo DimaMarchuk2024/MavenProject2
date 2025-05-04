@@ -1,6 +1,6 @@
 package com.dima.integration.mapper;
 
-import com.dima.Enum.Role;
+import com.dima.enumPack.Role;
 import com.dima.dto.UserCreateEditDto;
 import com.dima.entity.User;
 import com.dima.mapper.UserCreateEditMapper;
@@ -43,12 +43,7 @@ public class UserCreateEditMapperTest {
         User actualResult = userCreateEditMapper.map(userCreateEditDto);
 
         verify(userCreateEditMapper).map(userCreateEditDto);
-        assertThat(userCreateEditDto.getFirstname()).isEqualTo(actualResult.getFirstname());
-        assertThat(userCreateEditDto.getLastname()).isEqualTo(actualResult.getLastname());
-        assertThat(userCreateEditDto.getPhoneNumber()).isEqualTo(actualResult.getPhoneNumber());
-        assertThat(userCreateEditDto.getEmail()).isEqualTo(actualResult.getEmail());
-        assertThat(userCreateEditDto.getRole().name()).isEqualTo(actualResult.getRole().name());
-        assertThat(userCreateEditDto.getPassword()).isEqualTo(actualResult.getPassword());
+        assertThat(expectedResult).isEqualTo(actualResult);
     }
 
     @Test

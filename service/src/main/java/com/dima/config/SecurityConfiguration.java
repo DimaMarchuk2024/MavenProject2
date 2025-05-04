@@ -1,6 +1,6 @@
 package com.dima.config;
 
-import com.dima.Enum.Role;
+import com.dima.enumPack.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -9,9 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.stereotype.Component;
 
-@Component
 @EnableMethodSecurity
 @Configuration
 public class SecurityConfiguration {

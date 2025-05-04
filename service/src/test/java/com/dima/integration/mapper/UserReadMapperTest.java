@@ -1,6 +1,6 @@
 package com.dima.integration.mapper;
 
-import com.dima.Enum.Role;
+import com.dima.enumPack.Role;
 import com.dima.dto.UserReadDto;
 import com.dima.entity.User;
 import com.dima.mapper.UserReadMapper;

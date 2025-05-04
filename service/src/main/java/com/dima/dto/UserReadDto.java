@@ -1,6 +1,6 @@
 package com.dima.dto;
 
-import com.dima.Enum.Role;
+import com.dima.enumPack.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;

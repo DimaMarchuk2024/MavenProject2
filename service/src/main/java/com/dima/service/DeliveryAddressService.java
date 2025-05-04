@@ -28,6 +28,12 @@ public class DeliveryAddressService {
                 .map(deliveryAddressReadMapper::map);
     }
 
+    public List<DeliveryAddressReadDto> findAllByUserId(Long userId) {
+        return deliveryAddressDao.findAllByUserId(userId).stream()
+                .map(deliveryAddressReadMapper::map)
+                .toList();
+    }
+
     public List<DeliveryAddressReadDto> findAll() {
         return deliveryAddressDao.findAll()
                 .stream()

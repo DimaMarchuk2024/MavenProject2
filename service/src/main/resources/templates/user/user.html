@@ -7,33 +7,36 @@
 <body>
 <div th:insert="~{fragment :: header}"></div>
 <form th:action="@{/users/{userId}/update(userId=${user.id})}" method="post">
-    <label for="firstname"> Firstname:
-        <input id="firstname" type="text" name="firstname" th:value="${user.firstname}" >
+    <label for="firstname"><span th:text="#{user.firstname}"> Firstname:</span>
+        <input id="firstname" type="text" name="firstname" th:value="${user.firstname}">
     </label><br>
-    <label for="lastname"> Lastname:
+    <label for="lastname"><span th:text="#{user.lastname}"> Lastname:</span>
         <input id="lastname" type="text" name="lastname" th:value="${user.lastname}">
     </label><br>
-    <label for="phoneNumber"> PhoneNumber:
+    <label for="phoneNumber"><span th:text="#{user.phoneNumber}"> PhoneNumber:</span>
         <input id="phoneNumber" type="text" name="phoneNumber" th:value="${user.phoneNumber}">
     </label><br>
-    <label for="email"> Email:
+    <label for="email"><span th:text="#{user.email}"> Email:</span>
         <input id="email" type="text" name="email" th:value="${user.email}">
     </label><br>
-    <label for="birthDate"> BirthDate:
+    <label for="birthDate"><span th:text="#{user.birthDate}"> BirthDate:</span>
         <input id="birthDate" type="date" name="birthDate" th:value="${user.birthDate}">
     </label><br>
-    <label for="password"> Password:
+    <label for="password"><span th:text="#{user.password}"> Password:</span>
         <input id="password" type="text" name="password" th:value="${userCreate.password}">
     </label><br>
     <div th:each="role: ${roles}">
         <input th:id="${role}" type="radio" name="role" th:value="${role}" th:checked="${role == user.role}">
         <label th:for="${role}" th:text="${role}">Role name</label>
     </div>
-    <button type="submit">Update</button>
+    <button type="submit"><span th:text="#{user.update}">Update</span></button>
+</form>
+<form th:action="@{/delivery-addresses/user/{userId} (userId=${user.id})}">
+    <button type="submit"><span th:text="#{user.deliveryAddresses}">Delivery addresses</span></button>
 </form>
 
 <form th:action="@{/users/{userId}/delete(userId=${user.id})}" th:if="${user.role.name() == 'ADMIN'}" method="post">
-    <button type="submit">Remove</button>
+    <button type="submit"><span th:text="#{user.remove}">Remove</span></button>
 </form>
 </body>
 </html>

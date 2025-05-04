@@ -1,6 +1,6 @@
 package com.dima.integration.controller;
 
-import com.dima.Enum.Role;
+import com.dima.enumPack.Role;
 import com.dima.dto.UserCreateEditDto;
 import com.dima.dto.UserReadDto;
 import com.dima.integration.annotation.IT;

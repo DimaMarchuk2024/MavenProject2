@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ingredient</title>
+</head>
+<body>
+<div th:insert="~{fragment :: header}"></div>
+
+<form th:action="@{/ingredients/{id}/update (id=${ingredient.id})}" method="post">
+    <label for="name"> Name:
+        <input id="name" type="text" name="name" th:value="${ingredient.name}">
+    </label><br>
+    <label for="price"> Price:
+        <input id="price" type="text" name="price" th:value="${ingredient.price}">
+    </label><br>
+    <button type="submit">Update</button>
+</form>
+
+<form th:action="@{/ingredients/{id}/delete (id=${ingredient.id})}" method="post">
+    <button type="submit">Remove</button>
+</form>
+</body>
+</html>

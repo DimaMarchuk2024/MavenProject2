@@ -10,3 +10,9 @@ spring:
         format_sql: true
         show_sql: true
     open-in-view: false
+  messages:
+    basename: messages
+
+app:
+  image:
+    bucket: C:\Users\KaMo User\IdeaProjects\maven-project2\images

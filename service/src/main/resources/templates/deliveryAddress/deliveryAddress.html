@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>DeliveryAddress</title>
+</head>
+<body>
+<div th:insert="~{fragment :: header}"></div>
+
+<form th:action="@{/delivery-addresses/{id}/update (id=${addressReadDto.id})}" method="post">
+    <label for="address"> Address:
+        <input id="address" type="text" name="address" th:value="${addressReadDto.address}">
+    </label><br>
+    <label hidden="hidden" for="userId"> UserId:
+        <input id="userId" type="text" name="userId" th:value="${addressReadDto.user.id}">
+    </label><br>
+    <button type="submit">Update</button>
+</form>
+
+<form th:action="@{/delivery-addresses/{id}/delete (id=${addressReadDto.id})}" method="post">
+    <button type="submit">Remove</button>
+</form>
+</body>
+</html>

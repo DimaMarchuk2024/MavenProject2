@@ -1,6 +1,6 @@
 package com.dima.integration.controller;
 
-import com.dima.Enum.Role;
+import com.dima.enumPack.Role;
 import com.dima.dto.PageResponse;
 import com.dima.dto.UserReadDto;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.dima.Enum;
+package com.dima.enumPack;
 
 import org.springframework.security.core.GrantedAuthority;
 

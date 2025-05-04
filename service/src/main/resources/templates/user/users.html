@@ -7,30 +7,30 @@
 <body>
 <div th:insert="~{fragment :: header}"></div>
 <form action="/users">
-    <label for="firstname">Firstname:
+    <label for="firstname"><span th:text="#{users.firstname}">Firstname:</span>
         <input id="firstname" type="text" name="firstname" th:value="${filter.firstname}">
     </label>
-    <label for="lastname">Lastname:
+    <label for="lastname"><span th:text="#{users.lastname}">Lastname:</span>
         <input id="lastname" type="text" name="lastname" th:value="${filter.lastname}">
     </label>
-    <label for="birthDate">BirthDate:
+    <label for="birthDate"><span th:text="#{users.birthDate}">BirthDate:</span>
         <input id="birthDate" type="date" name="birthDate" th:value="${filter.birthDate}">
     </label>
-    <label for="phoneNumber">PhoneNumber:
+    <label for="phoneNumber"><span th:text="#{users.phoneNumber}">PhoneNumber:</span>
         <input id="phoneNumber" type="text" name="phoneNumber" th:value="${filter.phoneNumber}">
     </label>
-    <label for="email">Email:
+    <label for="email"><span th:text="#{users.email}">Email:</span>
         <input id="email" type="text" name="email" th:value="${filter.email}">
     </label>
     <div>
-        <label for="page">Page:
+        <label for="page"><span th:text="#{users.page}">Page:</span>
             <input id="page" type="number" name="page" th:value="${users.metadata.page}">
         </label>
-        <label for="size">Size:
+        <label for="size"><span th:text="#{users.size}">Size:</span>
             <input id="size" type="number" name="size" th:value="${users.metadata.size}">
         </label>
     </div>
-    <button type="submit">Filter</button>
+    <button type="submit"><span th:text="#{users.filter}">Filter</span></button>
 </form>
 <div th:each="user : ${users.content}">
     <a th:href="@{'/users/' + ${user.id}}" th:text="|${user.id}. ${user.firstname} ${user.lastname}|">User</a>

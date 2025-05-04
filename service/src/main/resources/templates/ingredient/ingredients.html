@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ingredients</title>
+</head>
+<body>
+<div th:insert="~{fragment :: header}"></div>
+
+<form action="/ingredients">
+    <div>
+        <label for="page">Page:
+            <input id="page" type="number" name="page" th:value="${ingredients.metadata.page}">
+        </label>
+        <label for="size">Size:
+            <input id="size" type="number" name="size" th:value="${ingredients.metadata.size}">
+        </label>
+    </div>
+    <button type="submit">Filter</button>
+</form>
+<div th:each="ingredient : ${ingredients.content}">
+    <a th:href="@{'/ingredients/' + ${ingredient.id}}" th:text="|${ingredient.id}. ${ingredient.name} = ${ingredient.price}|">Ingredient</a>
+</div>
+<br>
+<br>
+<form th:action="@{/ingredients/create}" method="post">
+    <label for="name"> Name:
+        <input id="name" type="text" name="name" th:value="${ingredientCreateEditDto.name}">
+    </label><br>
+    <label for="price"> Price:
+        <input id="price" type="text" name="price" th:value="${ingredientCreateEditDto.price}">
+    </label><br>
+    <button type="submit">Add Ingredient</button>
+</form>
+</body>
+</html>
