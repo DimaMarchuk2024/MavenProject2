@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pizza</title>
+</head>
+<body>
+<div th:insert="~{fragment :: header}"></div>
+<form th:action="@{/pizzas/{id}/update (id=${pizza.id})}" enctype="multipart/form-data" method="post">
+    <label for="name"> Name:
+        <input id="name" type="text" name="name" th:value="${pizza.name}">
+    </label><br>
+    <div th:if="${pizza.image}">
+        <img th:src="@{/api/v1/pizzas/{id}/avatar (id=${pizza.id})}" alt="Pizza image">
+    </div>
+    <label for="image"> Image:
+        <input id="image" type="file" name="image">
+    </label><br>
+    <button type="submit">Update</button>
+</form>
+
+<form th:action="@{/pizzas/{id}/delete (id=${pizza.id})}" method="post">
+    <button type="submit">Remove</button>
+</form>
+</body>
+</html>

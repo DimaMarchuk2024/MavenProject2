@@ -11,7 +11,8 @@ public class PizzaReadMapper implements Mapper<Pizza, PizzaReadDto> {
     public PizzaReadDto map(Pizza pizza) {
         return new PizzaReadDto(
                 pizza.getId(),
-                pizza.getName()
+                pizza.getName(),
+                pizza.getImage()
         );
     }
 }

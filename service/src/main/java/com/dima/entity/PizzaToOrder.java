@@ -1,7 +1,7 @@
 package com.dima.entity;
 
-import com.dima.Enum.Size;
-import com.dima.Enum.TypeDough;
+import com.dima.enumPack.Size;
+import com.dima.enumPack.TypeDough;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

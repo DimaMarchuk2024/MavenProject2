@@ -28,9 +28,10 @@ public class PizzaController {
     private final PizzaService pizzaService;
 
     @GetMapping
-    public String findAll(Model model, Pageable pageable) {
+    public String findAll(Model model, Pageable pageable, PizzaCreateEditDto pizzaCreateEditDto) {
         Page<PizzaReadDto> page = pizzaService.findAll(pageable);
         model.addAttribute("pizzas", PageResponse.of(page));
+        model.addAttribute("pizzaCreateEditDto", pizzaCreateEditDto);
 
         return "pizza/pizzas";
     }
@@ -45,10 +46,10 @@ public class PizzaController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public String create(@ModelAttribute @Validated PizzaCreateEditDto pizzaCreateEditDto) {
         pizzaService.create(pizzaCreateEditDto);
-        return "pizza/pizzas";
+        return "redirect:/pizzas";
     }
 
     @PostMapping("/{id}/update")
