@@ -46,8 +46,8 @@ public class UserService implements UserDetailsService {
                 .map(userReadMapper::map);
     }
 
-    public List<UserReadDto> findAll() {
-        return userDao.findAll()
+    public List<UserReadDto> findAll(Pageable pageable) {
+        return userDao.findAll(pageable)
                 .stream()
                 .map(userReadMapper::map)
                 .toList();

@@ -2,7 +2,7 @@ package com.dima.mapper;
 
 import com.dima.dao.impl.PizzaDao;
 import com.dima.dao.impl.UserDao;
-import com.dima.dto.PizzaToOrderCreateEditDto;
+import com.dima.dto.PizzaToOrderInBucket;
 import com.dima.entity.Pizza;
 import com.dima.entity.PizzaToOrder;
 import com.dima.entity.User;
@@ -13,31 +13,32 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class PizzaToOtderCreateEditMapper implements Mapper<PizzaToOrderCreateEditDto, PizzaToOrder> {
+public class PizzaToOtderCreateEditMapper implements Mapper<PizzaToOrderInBucket, PizzaToOrder> {
 
     private final PizzaDao pizzaDao;
     private final UserDao userDao;
 
     @Override
-    public PizzaToOrder map(PizzaToOrderCreateEditDto fromObject, PizzaToOrder toObject) {
+    public PizzaToOrder map(PizzaToOrderInBucket fromObject, PizzaToOrder toObject) {
         copy(fromObject, toObject);
         return toObject;
     }
 
     @Override
-    public PizzaToOrder map(PizzaToOrderCreateEditDto pizzaToOrderCreateEditDto) {
+    public PizzaToOrder map(PizzaToOrderInBucket pizzaToOrderInBucket) {
         PizzaToOrder pizzaToOrder = new PizzaToOrder();
-        copy(pizzaToOrderCreateEditDto, pizzaToOrder);
+        copy(pizzaToOrderInBucket, pizzaToOrder);
 
         return pizzaToOrder;
     }
 
-    private void copy(PizzaToOrderCreateEditDto pizzaToOrderCreateEditDto, PizzaToOrder pizzaToOrder) {
-        pizzaToOrder.setPizza(getPizza(pizzaToOrderCreateEditDto.getPizzaId()));
-        pizzaToOrder.setSize(pizzaToOrderCreateEditDto.getSize());
-        pizzaToOrder.setType(pizzaToOrderCreateEditDto.getType());
-        pizzaToOrder.setCount(pizzaToOrderCreateEditDto.getCount());
-        pizzaToOrder.setUser(getUser(pizzaToOrderCreateEditDto.getUserId()));
+    private void copy(PizzaToOrderInBucket pizzaToOrderInBucket, PizzaToOrder pizzaToOrder) {
+        pizzaToOrder.setPizza(getPizza(pizzaToOrderInBucket.getPizzaId()));
+        pizzaToOrder.setSize(pizzaToOrderInBucket.getSize());
+        pizzaToOrder.setType(pizzaToOrderInBucket.getType());
+        pizzaToOrder.setCount(pizzaToOrderInBucket.getCount());
+        pizzaToOrder.setPrice(pizzaToOrderInBucket.getPriceInBucket());
+        pizzaToOrder.setUser(getUser(pizzaToOrderInBucket.getUserId()));
     }
 
     private Pizza getPizza(Integer pizzaId) {

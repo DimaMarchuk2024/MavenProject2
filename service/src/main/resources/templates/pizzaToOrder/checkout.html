@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+</head>
+<h1>Checkout</h1>
+
+<body>
+<div th:insert="~{fragment :: header}"></div>
+<form th:action="@{/finish/add}" method="post">
+
+    <div th:each="bucket : ${bucketList}">
+        <a th:text="|${bucket}|">Bucket</a>
+    </div>
+    <br>
+    <a type="text" th:text="|PRICE ORDER: ${priceOrder}|">Price order</a>
+    <button type="submit">Place An Order</button>
+</form>
+</body>
+</html>
