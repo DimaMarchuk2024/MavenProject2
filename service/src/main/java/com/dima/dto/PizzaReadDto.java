@@ -7,4 +7,5 @@ public class PizzaReadDto {
 
     Integer id;
     String name;
+    String image;
 }

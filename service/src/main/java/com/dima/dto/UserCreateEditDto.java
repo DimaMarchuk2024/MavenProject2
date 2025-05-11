@@ -1,6 +1,6 @@
 package com.dima.dto;
 
-import com.dima.Enum.Role;
+import com.dima.enumPack.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

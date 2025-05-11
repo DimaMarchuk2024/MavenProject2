@@ -1,6 +1,6 @@
 package com.dima.entity;
 
-import com.dima.Enum.Role;
+import com.dima.enumPack.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

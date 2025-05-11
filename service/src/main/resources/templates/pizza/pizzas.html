@@ -17,7 +17,18 @@
     <button type="submit">Filter</button>
 </form>
 <div th:each="pizza : ${pizzas.content}">
-    <a th:href="@{'/pizzas/' + ${pizza.id}}" th:text="|${pizza.id}. ${pizza.name}|">Pizza</a>
+    <form  th:action="@{/pizzas/{id} (id=${pizza.id})}">
+        <a th:href="@{pizzas/{id}/to-bucket (id=${pizza.id})}" th:text="|${pizza.id}. ${pizza.name}|">Pizza</a>
+        <button type="submit">Update</button>
+    </form>
 </div>
+<br>
+<br>
+<form th:action="@{/pizzas/create}" method="post">
+    <label for="name"> Name:
+        <input id="name" type="text" name="name" th:value="${pizzaCreateEditDto.name}">
+    </label><br>
+    <button type="submit">Add pizza</button>
+</form>
 </body>
 </html>

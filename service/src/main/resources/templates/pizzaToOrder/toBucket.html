@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ToBucket</title>
+</head>
+<body>
+<form th:action="@{/pizzas/{id}/to-bucket}" method="post">
+    Size:
+    <div th:each="size: ${sizes}">
+        <input th:id="${size}" type="radio" name="size" th:value="${pizzaToOrderCreateEditDto.size}">
+        <label th:for="${size}" th:text="${size}">Size</label>
+    </div><br>
+    Type:
+    <div th:each="type: ${types}">
+        <input th:id="${type}" type="radio" name="type" th:value="${pizzaToOrderCreateEditDto.type}">
+        <label th:for="${type}" th:text="${type}">Type</label>
+    </div><br>
+    <div>
+        <label for="count">Count:
+            <input id="count" type="number" name="count" th:value="${pizzaToOrderCreateEditDto.count}">
+        </label>
+    </div>
+    Ingredient:
+    <div th:each="ingredient : ${ingredients.content}">
+        <label>
+<!--             как сделать два тэга th:each в одном div, чтобы при заказе пиццы были уже обозначены те ингредиенты,
+                 из которых состоит пицца. При таком варианте получается декартовое множество-->
+            <input th:each="pizzaIngredient : ${pizzaIngredients}" th:id="${ingredient}" type="checkbox" name="ingredient"
+                   th:value="${ingredient}" th:checked="${ingredient.name==pizzaIngredient.ingredientReadDto.name}" >
+            <label th:for="${ingredient}" th:text="${ingredient.name}">Ingredient</label>
+        </label>
+    </div>
+
+    <button type="submit">Bucket</button>
+</form>
+</body>
+</html>

@@ -29,6 +29,8 @@ public class Pizza implements BaseEntity<Integer> {
     @Column(unique = true)
     private String name;
 
+    private String image;
+
     @Builder.Default
     @OneToMany(mappedBy = "pizza")
     private List<PizzaIngredient> pizzaIngredients = new ArrayList<>();

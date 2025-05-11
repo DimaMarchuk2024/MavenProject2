@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>DeliveryAddressesByUserId</title>
+</head>
+<body>
+<div th:insert="~{fragment :: header}"></div>
+
+<div th:each="deliveryAddressByUserId : ${deliveryAddressesByUserId}">
+    <a th:href="@{/delivery-addresses/{id} (id=${deliveryAddressByUserId.id})}"
+       th:text="|${deliveryAddressByUserId.address}|">DeliveryAddressByUserId</a>
+</div>
+<br>
+<br>
+<form th:action="@{/delivery-addresses/user/{userId}/create (userId=${userId})}" method="post">
+    <label for="address"> Address:
+        <input id="address" type="text" name="address" th:value="${deliveryAddressCreateEditDto.address}">
+    </label><br>
+    <button type="submit">Add address</button>
+</form>
+</body>
+</html>
