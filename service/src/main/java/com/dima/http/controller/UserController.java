@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -41,7 +43,17 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public String findById(@PathVariable("id") Long id, Model model, UserCreateEditDto userCreateEditDto) {
+    public String findById(@PathVariable("id") Long id, Model model, UserCreateEditDto userCreateEditDto,
+                           @AuthenticationPrincipal UserDetails userDetails, Pageable pageable) {
+
+        String email = userDetails.getUsername();
+        UserReadDto userSession = userService.findAll(pageable)
+                .stream()
+                .filter(user -> user.getEmail().equals(email))
+                .findAny()
+                .orElseThrow();
+        model.addAttribute("userSession", userSession);
+
         return userService.findById(id)
                 .map(userReadDto -> {
                     model.addAttribute("user", userReadDto);

@@ -12,6 +12,8 @@ import com.dima.dto.PizzaToOrderReadDto;
 import com.dima.entity.IngredientToOrder;
 import com.dima.entity.Order;
 import com.dima.entity.OrderDetail;
+import com.dima.enumPack.Size;
+import com.dima.http.controller.Bucket;
 import com.dima.mapper.OrderReadMapper;
 import com.dima.mapper.PizzaToOrderReadMapper;
 import com.dima.mapper.PizzaToOtderCreateEditMapper;
@@ -23,17 +25,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static com.dima.http.controller.PizzaToOrderController.getPriceOrder;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PizzaToOrderService {
+
+    private final static BigDecimal PRICE_OF_PIZZA_BASE = BigDecimal.valueOf(8.0);
+    private final static BigDecimal MEDIUM_INDEX = BigDecimal.valueOf(1.2);
+    private final static BigDecimal BIG_INDEX = BigDecimal.valueOf(1.3);
 
     private final PizzaToOrderDao pizzaToOrderDao;
     private final PizzaToOrderReadMapper pizzaToOrderReadMapper;
@@ -46,7 +52,6 @@ public class PizzaToOrderService {
     private final OrderDetailDao orderDetailDao;
     private final IngredientService ingredientService;
 
-
     public Page<PizzaToOrderReadDto> findAll(Pageable pageable) {
         return pizzaToOrderDao.findAll(pageable)
                 .map(pizzaToOrderReadMapper::map);
@@ -58,17 +63,24 @@ public class PizzaToOrderService {
     }
 
     public BigDecimal getPriceInBucket(PizzaToOrderCreateEditDto pizzaToOrderCreateEditDto) {
-        BigDecimal priceInBucket = BigDecimal.valueOf(0.0);
+        BigDecimal priceInBucket = PRICE_OF_PIZZA_BASE;
 
         List<Integer> ingredientsIdsToBucket = pizzaToOrderCreateEditDto.getIngredients();
-        for (int ingredientsIdToBucket : ingredientsIdsToBucket) {
-            BigDecimal price = ingredientDao.findById(ingredientsIdToBucket).get().getPrice();
+        for (Integer ingredientsIdToBucket : ingredientsIdsToBucket) {
+            BigDecimal price = ingredientDao.findById(ingredientsIdToBucket).orElseThrow().getPrice();
             priceInBucket = priceInBucket.add(price);
         }
-        return priceInBucket;
+        if(pizzaToOrderCreateEditDto.getSize().equals(Size.MEDIUM)) {
+            priceInBucket = priceInBucket.multiply(MEDIUM_INDEX);
+        }
+        else if (pizzaToOrderCreateEditDto.getSize().equals(Size.BIG)) {
+            priceInBucket = priceInBucket.multiply(BIG_INDEX);
+        }
+        return priceInBucket.multiply(BigDecimal.valueOf(pizzaToOrderCreateEditDto.getCount())).setScale(2);
     }
 
-    public PizzaToOrderInBucket prepareToCheckout(PizzaToOrderCreateEditDto pizzaToOrderCreateEditDto, PizzaToOrderInBucket pizzaToOrderInBucket) {
+    public PizzaToOrderInBucket prepareToCheckout(PizzaToOrderCreateEditDto pizzaToOrderCreateEditDto) {
+        PizzaToOrderInBucket pizzaToOrderInBucket = new PizzaToOrderInBucket();
         String pizzaName = pizzaService.findById(pizzaToOrderCreateEditDto.getPizzaId()).orElseThrow().getName();
         BigDecimal priceInBucket = getPriceInBucket(pizzaToOrderCreateEditDto);
 
@@ -82,16 +94,16 @@ public class PizzaToOrderService {
         pizzaToOrderInBucket.setIngredients(pizzaToOrderCreateEditDto.getIngredients());
 
         for (Integer ingredientId : pizzaToOrderCreateEditDto.getIngredients()) {
-            pizzaToOrderInBucket.getIngredientName().add(ingredientService.findById(ingredientId).orElseThrow().getName());
+            pizzaToOrderInBucket.getIngredientNames().add(ingredientService.findById(ingredientId).orElseThrow().getName());
         }
         return pizzaToOrderInBucket;
     }
 
     @Transactional
-    public void create(List<PizzaToOrderInBucket> pizzaToOrderInBucketList) {
+    public Order create(Bucket bucket) {
         List<Long> listPizzaToOrderId = new ArrayList<>();
 
-        for (PizzaToOrderInBucket pizzaToOrderInBucket : pizzaToOrderInBucketList) {
+        for (PizzaToOrderInBucket pizzaToOrderInBucket : bucket.getPizzas()) {
             PizzaToOrderReadDto pizzaToOrderReadDto = Optional.of(pizzaToOrderInBucket)
                     .map(pizzaToOtderCreateEditMapper::map)
                     .map(pizzaToOrderDao::save)
@@ -110,8 +122,8 @@ public class PizzaToOrderService {
             }
         }
         Order order = Order.builder()
-                .dateTime(Instant.now().truncatedTo(ChronoUnit.MINUTES))
-                .finalPrice(getPriceOrder(pizzaToOrderInBucketList))
+                .dateTime(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()).toInstant(ZoneOffset.UTC))
+                .finalPrice(bucket.getPriceOrder())
                 .build();
         OrderReadDto orderReadDto = Optional.of(order)
                 .map(orderDao::save)
@@ -122,10 +134,11 @@ public class PizzaToOrderService {
             OrderDetail orderDetail = OrderDetail.builder()
                     .order(orderDao.findById(orderReadDto.getId()).orElseThrow())
                     .pizzaToOrder(pizzaToOrderDao.findById(pizzaToOrderId).orElseThrow())
-                    .price(getPriceOrder(pizzaToOrderInBucketList))
+                    .price(bucket.getPriceOrder())
                     .build();
             orderDetailDao.save(orderDetail);
         }
+        return  order;
     }
 
         @Transactional
