@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bucket</title>
+</head>
+<h1>Bucket</h1>
+
+<body>
+<div th:insert="~{fragment :: header}"></div>
+<form th:action="@{/checkout/add}" method="post">
+
+    <div th:each="bucket : ${bucketList}">
+        <a
+           th:text="|${bucket.pizzaName}, Size: ${bucket.size}, Type: ${bucket.type}, Count = ${bucket.count},
+           Price = ${bucket.priceInBucket}, Ingredients: ${bucket.ingredientName}|">Bucket</a>
+    </div>
+    <br>
+    <button type="submit">Go To Checkout</button>
+</form>
+</body>
+</html>
