@@ -8,14 +8,32 @@
 
 <body>
 <div th:insert="~{fragment :: header}"></div>
-<form th:action="@{/finish/add}" method="post">
+<form th:action="@{/order/create}" method="post">
 
-    <div th:each="bucket : ${bucketList}">
-        <a th:text="|${bucket}|">Bucket</a>
+    <div th:each="pizza : ${bucket.pizzas}">
+        <a th:text="|${pizza.pizzaName}, Size: ${pizza.size}, Type: ${pizza.type}, Count = ${pizza.count},
+           Price = ${pizza.priceInBucket}, Ingredients: ${pizza.ingredientNames}|">Bucket</a>
     </div>
     <br>
-    <a type="text" th:text="|PRICE ORDER: ${priceOrder}|">Price order</a>
+    <a type="text" th:text="|PRICE ORDER = ${bucket.priceOrder}|">Price order</a>
+    <br>
+    <br>
+    <label for="address"> Address:
+        <select id="address" name="address">
+            <option th:each="address : ${addresses}"
+                    th:value="${address.address}"
+                    th:text="${address.address}">Address
+            </option>
+        </select>
+    </label>
+    <br>
+    <br>
     <button type="submit">Place An Order</button>
+</form>
+<br>
+<br>
+<form th:action="@{/delivery-addresses/user/{id} (id=${userId})}">
+    <button type="submit">Add Delivery Address</button>
 </form>
 </body>
 </html>

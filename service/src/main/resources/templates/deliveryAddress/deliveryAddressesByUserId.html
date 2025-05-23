@@ -19,5 +19,8 @@
     </label><br>
     <button type="submit">Add address</button>
 </form>
+<div th:if="${errors}">
+    <p style="color: red" th:each="error : ${errors}" th:text="${error.defaultMessage}">Error Message</p>
+</div>
 </body>
 </html>

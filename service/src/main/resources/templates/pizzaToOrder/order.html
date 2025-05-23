@@ -2,14 +2,19 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Finish</title>
+    <title>Order</title>
 </head>
 <h1>Thanks For Your Order!</h1>
 
 <body>
 <div th:insert="~{fragment :: header}"></div>
 
+<a type="text" th:text="|Your order no.${order.id}, Order price = ${order.finalPrice}|">Message</a>
+
     <a type="text" th:text="|If we dont deliver the order by ${timeDelivery}, well give you a gift for your next order |">Message</a>
 
+<form th:action="@{/pizzas}">
+    <button type="submit">Go To Pizzas</button>
+</form>
 </body>
 </html>

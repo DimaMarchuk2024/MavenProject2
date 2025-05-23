@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Ingredients</title>
 </head>
+<h1 th:text="Ingredients">Ingredients</h1>
 <body>
 <div th:insert="~{fragment :: header}"></div>
 
@@ -32,5 +33,8 @@
     </label><br>
     <button type="submit">Add Ingredient</button>
 </form>
+<div th:if="${errors}">
+    <p style="color: red" th:each="error : ${errors}" th:text="${error.defaultMessage}">Error Message</p>
+</div>
 </body>
 </html>
