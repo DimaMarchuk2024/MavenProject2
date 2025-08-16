@@ -19,6 +19,6 @@ import java.lang.annotation.Target;
 @Sql({
         "classpath:sql/data.sql"
 })
-@WithMockUser(username = "test@gmail.com", password = "123", authorities = {"ADMIN", "USER"})
+@WithMockUser(username = "sava@gmail.com", password = "999", authorities = {"ADMIN", "USER"})
 public @interface IT {
 }

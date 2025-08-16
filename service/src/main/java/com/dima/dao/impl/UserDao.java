@@ -24,7 +24,7 @@ public interface UserDao extends JpaRepository<User, Long>, FilterUserDao, Query
      * Найти всех пользователей, сделавших заказ больше определенной суммы,
      * упорядоченные по сумме заказа (final price)
      */
-    @EntityGraph(attributePaths = {"pizzaToOrders", "pizzaToOrders.orderDetails", "pizzaToOrders.orderDetails.order"})
+    @EntityGraph(attributePaths = {"pizzaToOrders"})
     @Query("select u from User u join u.pizzaToOrders pto join pto.orderDetails od join od.order o " +
            "where o.finalPrice > :finalPrice order by o.finalPrice")
     List<User> findAllByOrderFinalPrice(BigDecimal finalPrice);

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,9 +45,11 @@ public class UserServiceIT {
 
     @Test
     void findAll() {
-//        List<UserReadDto> result = userService.findAll();
+        PageRequest pageable = PageRequest.of(1, 1);
 
-//        assertThat(result).hasSize(3);
+        List<UserReadDto> result = userService.findAll(pageable);
+
+        assertThat(result).hasSize(1);
     }
 
     @Test
