@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>Pizzas</title>
 </head>
+<h1 th:text="Pizzas">Pizzas</h1>
 <body>
+<div th:insert="~{fragment :: header}"></div>
 <form action="/pizzas">
     <div>
         <label for="page">Page:
@@ -17,18 +19,26 @@
     <button type="submit">Filter</button>
 </form>
 <div th:each="pizza : ${pizzas.content}">
-    <form  th:action="@{/pizzas/{id} (id=${pizza.id})}">
+    <form  th:action="@{/pizzas/{id} (id=${pizza.id})}" enctype="multipart/form-data">
         <a th:href="@{pizzas/{id}/to-bucket (id=${pizza.id})}" th:text="|${pizza.id}. ${pizza.name}|">Pizza</a>
-        <button type="submit">Update</button>
+        <br>
+        <img th:src="@{/api/v1/pizzas/{id}/avatar (id=${pizza.id})}" alt="Pizza image">
+        <button type="submit" th:if="${userReadDto.role.name() == 'ADMIN'}">Update</button>
     </form>
 </div>
 <br>
 <br>
-<form th:action="@{/pizzas/create}" method="post">
+<form th:action="@{/pizzas/create}" enctype="multipart/form-data" method="post" th:if="${userReadDto.role.name() == 'ADMIN'}">
     <label for="name"> Name:
         <input id="name" type="text" name="name" th:value="${pizzaCreateEditDto.name}">
     </label><br>
+    <label for="image"> Image:
+        <input id="image" type="file" name="image">
+    </label><br>
     <button type="submit">Add pizza</button>
 </form>
+<div th:if="${errors}">
+    <p style="color: red" th:each="error : ${errors}" th:text="${error.defaultMessage}">Error Message</p>
+</div>
 </body>
 </html>

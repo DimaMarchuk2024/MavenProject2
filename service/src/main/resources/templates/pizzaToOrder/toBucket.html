@@ -7,8 +7,9 @@
 <h1 th:text="${pizza.name}">PizzaName</h1>
 <body>
 <div th:insert="~{fragment :: header}"></div>
-<form th:action="@{/bucket/add}" method="post">
-
+<form th:action="@{/bucket/add}" enctype="multipart/form-data" method="post">
+    <img th:src="@{/api/v1/pizzas/{id}/avatar (id=${pizza.id})}" alt="Pizza image">
+    <br>
     Size:
     <div th:each="size: ${sizes}">
         <label>
@@ -47,5 +48,8 @@
 
     <button type="submit">Bucket</button>
 </form>
+<div th:if="${errors}">
+    <p style="color: red" th:each="error : ${errors}" th:text="${error.defaultMessage}">Error Message</p>
+</div>
 </body>
 </html>

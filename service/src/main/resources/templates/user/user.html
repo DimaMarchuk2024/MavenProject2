@@ -6,7 +6,7 @@
 </head>
 <body>
 <div th:insert="~{fragment :: header}"></div>
-<form th:action="@{/users/{userId}/update(userId=${user.id})}" method="post">
+<form th:action="@{/users/{userId}/update (userId=${user.id})}" method="post">
     <label for="firstname"><span th:text="#{user.firstname}"> Firstname:</span>
         <input id="firstname" type="text" name="firstname" th:value="${user.firstname}">
     </label><br>
@@ -34,9 +34,12 @@
 <form th:action="@{/delivery-addresses/user/{userId} (userId=${user.id})}">
     <button type="submit"><span th:text="#{user.deliveryAddresses}">Delivery addresses</span></button>
 </form>
+<form th:action="@{/orders/users/{userId} (userId=${user.id})}">
+    <button type="submit">Orders</button>
+</form>
 
-<form th:action="@{/users/{userId}/delete(userId=${user.id})}" th:if="${user.role.name() == 'ADMIN'}" method="post">
-    <button type="submit"><span th:text="#{user.remove}">Remove</span></button>
+<form th:action="@{/users/{userId}/delete (userId=${user.id})}"  method="post">
+    <button th:if="${userSession.role.name() == 'ADMIN'}" type="submit"><span th:text="#{user.remove}">Remove</span></button>
 </form>
 </body>
 </html>

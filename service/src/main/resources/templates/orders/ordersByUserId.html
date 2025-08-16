@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>OrdersByUserId</title>
+</head>
+<h1 th:text="|Orders ${user.firstname} ${user.lastname} (${user.email})|">PizzaName</h1>
+<body>
+<div th:insert="~{fragment :: header}"></div>
+
+<div th:each="order : ${ordersByUserId}">
+    <a
+       th:text="|Order no.${order.id}, Time : ${order.dateTime}, Price = ${order.finalPrice}|">OrderByUserId</a>
+    <br>
+    <div th:each="pizza : ${order.pizzaToOrderReadDtos}">
+        <a th:text="|${pizza.pizzaReadDto.name},
+        Size : ${pizza.size},
+        Type = ${pizza.type},
+        Count = ${pizza.count},
+        Price = ${pizza.price}|">Pizza in Order</a>
+        <div th:each="ingredient : ${pizza.ingredientReadDtos}">
+            <a th:text="|${ingredient.name}|">Ingredient</a>
+        </div>
+    </div>
+    <br>
+    <br>
+
+</div>
+<br>
+<br>
+<div th:if="${errors}">
+    <p style="color: red" th:each="error : ${errors}" th:text="${error.defaultMessage}">Error Message</p>
+</div>
+</body>
+</html>

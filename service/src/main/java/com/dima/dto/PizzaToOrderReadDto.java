@@ -5,6 +5,9 @@ import com.dima.enumPack.TypeDough;
 import lombok.Value;
 import lombok.experimental.FieldNameConstants;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @Value
 @FieldNameConstants
 public class PizzaToOrderReadDto {
@@ -14,8 +17,8 @@ public class PizzaToOrderReadDto {
     Size size;
     TypeDough type;
     Integer count;
+    BigDecimal price;
     UserReadDto userReadDto;
+    List<IngredientReadDto> ingredientReadDtos;
 
-//    List<IngredientReadDto> ingredientReadDtos;
-//    это поле необходимо для нахождение из базы всех ингредиентов заказанной пиццы?
 }

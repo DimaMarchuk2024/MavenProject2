@@ -8,14 +8,20 @@
 
 <body>
 <div th:insert="~{fragment :: header}"></div>
-<form th:action="@{/checkout/add}" method="post">
 
-    <div th:each="bucket : ${bucketList}">
-        <a
-           th:text="|${bucket.pizzaName}, Size: ${bucket.size}, Type: ${bucket.type}, Count = ${bucket.count},
-           Price = ${bucket.priceInBucket}, Ingredients: ${bucket.ingredientName}|">Bucket</a>
-    </div>
-    <br>
+<div th:each="pizza, stat : ${bucket.pizzas}">
+    <a th:text="|${pizza.pizzaName}, Size: ${pizza.size}, Type: ${pizza.type}, Count = ${pizza.count},
+           Price = ${pizza.priceInBucket}, Ingredients: ${pizza.ingredientNames}|">Bucket</a>
+    <form th:action="@{/bucket/{id}/remove (id=${stat.index})}" method="post">
+        <button type="submit">Remove</button>
+        <br>
+    </form>
+</div>
+<br>
+<a type="text" th:text="|PRICE ORDER = ${bucket.priceOrder}|">Price order</a>
+<br>
+<br>
+<form th:action="@{/checkout}" th:if="${!bucket.pizzas.isEmpty()}">
     <button type="submit">Go To Checkout</button>
 </form>
 </body>
