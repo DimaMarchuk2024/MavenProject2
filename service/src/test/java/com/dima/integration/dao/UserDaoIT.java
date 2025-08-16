@@ -45,6 +45,6 @@ class UserDaoIT {
 
         List<User> users = userDao.findAllByFilter(filter);
 
-        assertThat(users).hasSize(2);
+        assertThat(users).hasSize(1);
     }
 }

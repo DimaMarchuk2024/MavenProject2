@@ -8,6 +8,7 @@ import com.dima.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -80,7 +81,8 @@ class UserControllerIT {
                         status().is3xxRedirection(),
                         redirectedUrl("/login")
                 );
-        Optional<UserReadDto> actualResult = userservice.findAll()
+        PageRequest pageable = PageRequest.of(0, 20);
+        Optional<UserReadDto> actualResult = userservice.findAll(pageable)
                 .stream()
                 .filter(userReadDto -> userReadDto.getEmail().equals("savasava@gmail.com"))
                 .findAny();

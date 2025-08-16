@@ -12,6 +12,18 @@ spring:
     open-in-view: false
   messages:
     basename: messages
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 476821221223-7uh2tebbkpgjjvok8j6qtk4vsht51q7e.apps.googleusercontent.com
+            clientSecret: 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
+            redirectUri: http://localhost:8080/login/oauth2/code/google
+            scope:
+              - openid
+              - email
+              - profile
 
 app:
   image:
