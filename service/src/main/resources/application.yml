@@ -28,3 +28,11 @@ spring:
 app:
   image:
     bucket: C:\Users\KaMo User\IdeaProjects\maven-project2\images
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: 476821221223-7uh2tebbkpgjjvok8j6qtk4vsht51q7e.apps.googleusercontent.com
+      client-secret: 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
+      scopes: openid, email, profile
+    oauth2-redirect-url: http://localhost:8080/swagger-ui/oauth2-redirect.html
