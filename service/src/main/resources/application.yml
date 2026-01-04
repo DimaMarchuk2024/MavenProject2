@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/pizzeria2
     username: postgres
-    password: pass
+    password: hpbox4720
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
